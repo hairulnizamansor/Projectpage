@@ -1,0 +1,3973 @@
+<style>
+body {padding:80px;}
+</style>
+<h2><strong><span style="color: #ff0000;">PROMPT 1<br /></span></strong><strong><span style="color: #ff0000;">Instructions for Template</span></strong></h2>
+<ul>
+<li>I want to build an Inventory Management System with dashboard using Google Sheets and Apps Script.</li>
+<li>This will have multiple features like adding / editing / updating inventory items, suppliers, customers, purchase orders, sales orders, payments receipts, inventory tracking, generating pdf reports etc.,</li>
+<li>I have created a google spreadsheet named &ldquo;AIC Inventory App&rdquo; and my apps script project is tied to this spreadsheet.</li>
+<li>I will build UI using html css and save data entered through html pages on different google sheets. Then display selected data in different tables, cards etc., inside the web app with some calculated fields.</li>
+<li>I am providing specific details below one by one.</li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>template.html</strong></p>
+<ul>
+<li>First step is to create a template with navigation links on the side menu and some more links on top right corner of the top bar.</li>
+<li>This side menu and top bar links will remain fixed i.e., they should remain intact when I navigate to different HTML pages in the app i.e., this template is reusable and should be called each time I navigate to different html pages within the app &ndash; and the content of other app pages will be dynamically injected into that template.</li>
+</ul>
+<p>Create a file named <strong>&lsquo;template.html&rsquo;</strong> and build a reusable template in this file with the following components;</p>
+<p><strong>(a) Heading and navigation Links on the side menu</strong></p>
+<ul>
+<li>Create a heading on sidebar &ldquo;AIC Inventory App&rdquo;</li>
+<li>Then create the following navigation links;
+<ul>
+<li>Dashboard (index.html)</li>
+<li>Inventory (inventory.html)</li>
+<li>Suppliers (suppliers.html)</li>
+<li>Customers (customers.html)</li>
+<li>Purchases (purchases.html)</li>
+<li>Sales (sales.html)</li>
+<li>Receipts (receipts.html)</li>
+<li>Payments (payments.html)</li>
+<li>Reports (reports.html)<br /> </li>
+</ul>
+</li>
+<li>Implement proper navigation functionality between different webapp pages.</li>
+<li>For example, when I click Customers, it should redirect to <strong>&lsquo;customers.html&rsquo;</strong> page and so on.</li>
+<li>You can use the following html markup for sidebar navigation links;</li>
+</ul>
+<p>&lt;a href="&lt;?= getScriptUrl() ?&gt;?page=dashboard" class="nav-item"<br /> </p>
+<ul>
+<li>A function like this to map template pages</li>
+</ul>
+<p>// Map pages to their template files</p>
+<p>&nbsp; const pageTemplates = {</p>
+<p>&nbsp; &nbsp; 'dashboard': 'index',</p>
+<p>&nbsp;</p>
+<ul>
+<li>To get correct template name;</li>
+</ul>
+<p>const contentTemplate = pageTemplates[page] || 'index';<br /> </p>
+<ul>
+<li>To create template with name;</li>
+</ul>
+<p>const template = HtmlService.createTemplateFromFile('base');</p>
+<p>template.contentTemplate = contentTemplate;</p>
+<p>&nbsp;</p>
+<ul>
+<li>To return evaluated template.</li>
+</ul>
+<p>return template.evaluate()</p>
+<p>&nbsp;</p>
+<ul>
+<li>Helper function to include html files.</li>
+</ul>
+<p>function include(filename) {</p>
+<p>&nbsp; return HtmlService.createHtmlOutputFromFile(filename).getContent();</p>
+<p>}</p>
+<p>&nbsp;</p>
+<ul>
+<li>Helper function to get script URL</li>
+</ul>
+<p>function getScriptUrl() {</p>
+<p>&nbsp; return ScriptApp.getService().getUrl();</p>
+<p>}</p>
+<p>&nbsp;</p>
+<p><strong>Front end styling and other instructions;</strong></p>
+<ul>
+<li>Use font awesome and include appropriate icons with links, input fields and buttons.</li>
+<li>Use light black, white, light aqua, teal and grey color combination.</li>
+<li>Use Poppins, Roboto and Montserrat google fonts.</li>
+<li>Write HTML, CSS and Javscript in a single file for <strong>&lsquo;template.html&rsquo;</strong></li>
+<li>Write .gs code in <strong>&ldquo;gstemplate.gs&rdquo;</strong> file</li>
+</ul>
+<p><strong>&nbsp;</strong></p>
+<p>ACT AS A PROFESSIONAL GOOGLE SHEETS APPS SCRIPT DEVELOPER.<br /> THOROUGHLY ANALYZE THE INSTRUCTIONS AND PROVIDE COMPLETE AND WORKING HTML, CSS, JAVASCRIPT, AND .GS (GOOGLE APPS SCRIPT) CODE FOR THIS MODULE</p>
+<p>REMEMBER TO CONSULT GOOGLE SHEETS APPS SCRIPT DOCUMENTATION IF YOU ARE UNSURE ABOUT ANYTHING.<br /> <a href="https://developers.google.com/apps-script">https://developers.google.com/apps-script</a></p>
+<p>&nbsp;</p>
+<h2><span style="color: #ff0000;"><strong>PROMPT 2</strong></span></h2>
+<h2><span style="color: #ff0000;"><strong>Instructions for Suppliers Module &ndash; suppliers.html and gssuppliers.gs</strong></span></h2>
+<p>Here are the instructions for the Suppliers module</p>
+<ol>
+<li><strong>Sheets and named ranges<br /> <br /> </strong></li>
+</ol>
+<ul>
+<li>We will use 2 google sheets and named ranges for this module;</li>
+<li>Sheet names = &ldquo;Suppliers&rdquo; and &ldquo;Dimensions&rdquo;</li>
+<li>Named ranges = &ldquo;RANGESUPPLIERS&rdquo; and &ldquo;RANGEDIMENSIONS&rdquo;</li>
+<li>Column names on &ldquo;Suppliers&rdquo; sheet &gt; named range &ldquo;RANGESUPPLIERS&rdquo; are as follows. Column names are on Row # 1 and data should start from row # 2.</li>
+</ul>
+<table width="0">
+<tbody>
+<tr>
+<td>
+<p>Supplier ID</p>
+</td>
+<td>
+<p>Supplier Name</p>
+</td>
+<td>
+<p>Supplier Contact</p>
+</td>
+<td>
+<p>Supplier Email</p>
+</td>
+<td>
+<p>State</p>
+</td>
+<td>
+<p>City</p>
+</td>
+<td>
+<p>Supplier Address</p>
+</td>
+<td>
+<p>Total Purchases</p>
+</td>
+<td>
+<p>Total Payments</p>
+</td>
+<td>
+<p>Balance Payable</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<ul>
+<li>Column names on &ldquo;Dimensions&rdquo; sheet &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; are as follows. Column names are on Row # 1 and data should start from row # 2.</li>
+</ul>
+<table width="0">
+<tbody>
+<tr>
+<td>
+<p>State</p>
+</td>
+<td>
+<p>City</p>
+</td>
+<td>
+<p>PMT Mode</p>
+</td>
+<td>
+<p>PMT Status</p>
+</td>
+<td>
+<p>Shipping Status</p>
+</td>
+<td>
+<p>Item Type</p>
+</td>
+<td>
+<p>Item Category</p>
+</td>
+<td>
+<p>Item Subcategory</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<ol start="2">
+<li><strong>Main heading and subheading container</strong></li>
+</ol>
+<ul>
+<li>Create a single row (separate container)</li>
+<li>Give main heading: &lsquo;Suppliers(aligned left)</li>
+<li>And subheading: &lsquo;Add and manage your suppliers&rsquo; (aligned left)</li>
+</ul>
+<p><strong>&nbsp;</strong></p>
+<ol start="3">
+<li><strong>Navigation buttons and search bar container</strong></li>
+</ol>
+<ul>
+<li>Create following buttons aligned left
+<ul>
+<li>{New Supplier}</li>
+<li>{New State}</li>
+<li>{New City}</li>
+</ul>
+</li>
+<li>Also create the following elements on the same row aligned right;
+<ul>
+<li>Drop-Down</li>
+<li>Search input box linked with drop-down</li>
+<li>{Search} button and {Clear} button</li>
+</ul>
+</li>
+<li>Specific instructions are provided later in this prompt.</li>
+</ul>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<ul>
+<li><strong>{New State} button</strong></li>
+</ul>
+<p>Open HTML popup form when <strong>{New State} </strong>button is clicked with proper width, length and design. Aligned center on the page.</p>
+<ul>
+<li>Provide following elements on the pop-up form
+<ul>
+<li>Title &ldquo;Add New State&rdquo;</li>
+<li>State Name = [Text box input &ndash; required]</li>
+</ul>
+</li>
+<li>Also provide 2 buttons aligned bottom right on this form
+<ul>
+<li>{Save} button and {Close} button</li>
+</ul>
+</li>
+<li>If user clicks {Close} button, exit the form</li>
+<li>If user clicks {Save} button;
+<ul>
+<li>Go to google sheet &ldquo;Dimensions&rdquo; &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; &gt; column name &ldquo;State&rdquo;</li>
+<li>And save the data on next available empty row</li>
+</ul>
+</li>
+<li>After saving the data, show html alert success message &ldquo;New State Added&rdquo;</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><strong>{New City} button</strong></li>
+</ul>
+<p>Open HTML popup form when <strong>{New City} </strong>button is clicked with proper width, length and design. Aligned center on the page.</p>
+<ul>
+<li>Provide following elements on the pop-up form
+<ul>
+<li>Title &ldquo;Add New City&rdquo;</li>
+<li>[State Name] = [Text box input &ndash; required]</li>
+</ul>
+</li>
+<li>Also provide 2 buttons aligned bottom right on this form
+<ul>
+<li>{Save} button and {Close} button</li>
+</ul>
+</li>
+<li>If user clicks {Close} button, exit the form</li>
+<li>If user clicks {Save} button;
+<ul>
+<li>Go to google sheet &ldquo;Dimensions&rdquo; &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; &gt; column name &ldquo;State&rdquo;</li>
+<li>And save the data on next available empty row</li>
+</ul>
+</li>
+<li>After saving the data, show html alert success message &ldquo;New City Added&rdquo;</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<ul>
+<li><strong>{New Supplier} button</strong></li>
+</ul>
+<p>Open HTML popup form when <strong>{New Supplier} </strong>button is clicked with proper width, length and design. Aligned center on the page.</p>
+<ul>
+<li>Provide following elements on the pop-up form
+<ul>
+<li>Title &ldquo;Add New City&rdquo;</li>
+<li>[Supplier ID] = Read Only, Auto Generated
+<ol>
+<li>Provide a {Generate} button with [Supplier ID] field.</li>
+<li>When {Generate} button is clicked, generate a unique random [Supplier ID] starting with letter &ldquo;P&rdquo; followed by 5 random numbers. For example &ldquo;P56978&rdquo;</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Then go to google sheet &ldquo;Suppliers&rdquo; &gt; named range &ldquo;RANGESUPPLIERS&rdquo; &gt; column name &ldquo;Supplier ID&rdquo;</li>
+</ul>
+<ol>
+<li>IF the [Supplier ID] you generated already exist in this column then regenerate a new [Supplier ID] because I don&rsquo;t want duplicate values in this column.</li>
+<li>IF the [Supplier ID] you generated does NOT exist in this column, then populate the result in [Supplier ID] column.</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+</ol>
+<ul>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>[Supplier Name] = Text box input &ndash; required</li>
+<li>[Supplier Contact] = Text box input &ndash; optional</li>
+<li>[Supplier Email] = Text box input &ndash; optional</li>
+<li>[Supplier State] = HTML Searchable Drop-Down using select2, chosen or other libraries &ndash; Required
+<ol>
+<li>Go to google sheet &ldquo;Dimensions&rdquo; &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; &gt; column name &ldquo;State&rdquo;</li>
+<li>Populate all values from this column in this drop-down excluding column name on row 1.</li>
+</ol>
+</li>
+</ul>
+<ul>
+<li>!!!Important!!! Only populate the rows containing data. Ignore blank/empty rows.</li>
+</ul>
+<ol>
+<li>You can use libraries like select2, chosen, or jquery UI to implement search functionality within the drop-down search box as appropriate.</li>
+</ol>
+<ul>
+<li>[Supplier City] = HTML Searchable Drop-Down using select2, chosen or other libraries &ndash; Required
+<ol>
+<li>Go to google sheet &ldquo;Dimensions&rdquo; &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; &gt; column name &ldquo;City&rdquo;</li>
+<li>Populate all values from this column in this drop-down excluding column name on row 1.</li>
+</ol>
+</li>
+</ul>
+<ul>
+<li>!!!Important!!! Only populate the rows containing data. Ignore blank/empty rows.</li>
+</ul>
+<ol>
+<li>You can use libraries like select2, chosen, or jquery UI to implement search functionality within the drop-down search box as appropriate.</li>
+</ol>
+<ul>
+<li>[Supplier Address] = Text box input &ndash; optional<br /> </li>
+</ul>
+<ul>
+<li>Also provide 2 buttons aligned bottom right on this form
+<ul>
+<li>{Save} button and {Close} button</li>
+</ul>
+</li>
+<li>If user clicks {Close} button, exit the form</li>
+<li>If user clicks {Save} button;
+<ul>
+<li>Validate the form.</li>
+<li>Then go to google sheet &ldquo;Suppliers&rdquo; &gt; named range &ldquo;RANGESUPPLIERS&rdquo; and save the data from popup form on next available empty row as follows;
+<ul>
+<li>Save [Supplier ID] in &ldquo;Supplier ID&rdquo; column</li>
+<li>Save [Supplier Name] in &ldquo;Supplier Name&rdquo; column</li>
+<li>Save [Supplier Contact] in &ldquo;Supplier Contact&rdquo; column</li>
+<li>Save [Supplier Email] in &ldquo;Supplier Email&rdquo; column</li>
+<li>Save [Supplier State] in &ldquo;State&rdquo; column</li>
+<li>Save [Supplier City] in &ldquo;City&rdquo; column</li>
+<li>Save [Supplier Address] in &ldquo;Supplier Address&rdquo; column</li>
+</ul>
+</li>
+<li>After saving the data, show html alert success message &ldquo;New Supplier Added&rdquo;</li>
+<li>And refresh {supplierlist} HTML table to display updated records.</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<ol start="4">
+<li><strong>{supplierlist} HTML table</strong></li>
+</ol>
+<p>After &ldquo;Navigation buttons and search bar container&rdquo;, create a new container.</p>
+<ul>
+<li>Go to google sheet &ldquo;Suppliers&rdquo; &gt; named range &ldquo;RANGESUPPLIERS&rdquo;</li>
+<li>And render all the column names and the data rows from that sheet/named range as an HTML table</li>
+<li>Note: Column names are already provided in the start.</li>
+<li>Important: Only display the data rows containing data. Ignore blank/empty rows.</li>
+<li>Give width to the <strong>{supplierlist} HTML table column as follows;</strong>
+<ol>
+<li>Supplier ID = 5%</li>
+<li>Supplier Name = 15%</li>
+<li>Supplier Contact = 8%</li>
+<li>Supplier Email = 10%</li>
+<li>State = 7%</li>
+<li>City = 7%</li>
+<li>Supplier Address = 20%</li>
+<li>Total Purchases = 7%</li>
+<li>Total Payments = 7%</li>
+<li>Balance Payable = 7%</li>
+<li>&ldquo;Action Buttons&rdquo; = 7%</li>
+</ol>
+</li>
+<li>Provide &ldquo;Pagination&rdquo; functionality, and show 25 entries on a single page.</li>
+</ul>
+<p>Note: Instructions for {Action Buttons} are provided later in this prompt.</p>
+<ol start="5">
+<li><strong>Search functionality in {supplierlist} HTML table</strong></li>
+</ol>
+<ul>
+<li>Refer to the initial instructions provided in &ldquo;Navigation buttons and search bar container&rdquo; section.</li>
+<li>In the drop-down, populate the following options (Search Criteria);
+<ul>
+<li>&ldquo;All&rdquo;</li>
+<li>&ldquo;Supplier Name&rdquo;</li>
+<li>&ldquo;State&rdquo;</li>
+<li>&ldquo;City&rdquo;</li>
+</ul>
+</li>
+<li>If user selects &ldquo;Supplier Name&rdquo; as search criteria, input search query in search box and click {Search} button
+<ul>
+<li>Match the search query in &ldquo;Supplier Name&rdquo; column of {supplierlist} HTML table and filter the records (Partial Match)</li>
+<li>If no data is found, display HTML alert message &ldquo;No matching data found&rdquo;</li>
+</ul>
+</li>
+<li>If user selects &ldquo;State&rdquo; as search criteria, input search query in search box and click {Search} button
+<ul>
+<li>Match the search query in &ldquo;State&rdquo; column of {supplierlist} HTML table and filter the records (Partial Match)</li>
+<li>If no data is found, display HTML alert message &ldquo;No matching data found&rdquo;</li>
+</ul>
+</li>
+<li>If user selects &ldquo;City&rdquo; as search criteria, input search query in search box and click {Search} button
+<ul>
+<li>Match the search query in &ldquo;City&rdquo; column of {supplierlist} HTML table and filter the records (Partial Match)</li>
+<li>If no data is found, display HTML alert message &ldquo;No matching data found&rdquo;</li>
+</ul>
+</li>
+<li>If user clicks {Clear} button
+<ul>
+<li>Remove search query from search box</li>
+<li>Reset the {supplierlist} HTML table and display all records</li>
+</ul>
+</li>
+<li>By default, set the {supplierlist} HTML table to display all records and keep the drop-down option = &ldquo;All&rdquo;</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Search} and {Clear} button is clicked.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>&nbsp;</p>
+<ol start="6">
+<li><strong>{Edit} {Update} {Delete} and {Cancel} &ldquo;Action Buttons&rdquo; in {supplierlist} HTML table</strong></li>
+</ol>
+<ul>
+<li>With each data row on {supplierlist} HTML table provide the following action buttons / links / or font-awesome icons as appropriate;
+<ul>
+<li><strong>{Edit} {Update} {Delete} and {Cancel}<br /> <br /> </strong></li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><strong>{Edit} {Update} and {Cancel} functionality</strong></li>
+<li>When user clicks <strong>{Edit} </strong>button on any data row
+<ul>
+<li>Turn that data row into editable mode on front end HTML table.</li>
+<li>Only turn the following columns into editable mode;
+<ul>
+<li>&ldquo;Supplier Name&rdquo;</li>
+<li>&ldquo;Supplier Contact&rdquo;</li>
+<li>&ldquo;Supplier Email&rdquo;</li>
+<li>&ldquo;State&rdquo;</li>
+<li>&ldquo;City&rdquo;</li>
+<li>&ldquo;Supplier Address&rdquo;</li>
+</ul>
+</li>
+<li>For the columns &ldquo;State&rdquo; and &ldquo;City&rdquo;
+<ul>
+<li>Make sure to use [Supplier State] and [Supplier City] drop-downs in edit mode as we have already built them while dealing with {New Supplier} button</li>
+</ul>
+</li>
+<li>After making the changes, when user clicks {Update} button;
+<ul>
+<li>Validate the data</li>
+<li>Save the update back into the same row on Google sheet &ldquo;Suppliers&rdquo; named range &ldquo;RANGESUPPLIERS&rdquo;</li>
+<li>You might want to create a row recognition number function for this.</li>
+</ul>
+</li>
+<li>After updating the data, show HTML alert success message &ldquo;Supplier Details Updated&rdquo;</li>
+<li>Then refresh the {supplierlist} HTML table to display the updated records</li>
+</ul>
+</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Edit} and {Update} buttons are clicked.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>&nbsp;</p>
+<p>Important!: {Update} and {Cancel} button should only be visible after user has clicked the {Edit} button.</p>
+<p>By default, only {Edit} and {Delete} buttons will be visible.</p>
+<p>IF user clicks {Edit} and then click {Cancel} then don&rsquo;t update the data and revert back the row into view mode.<br /> </p>
+<ul>
+<li><strong>{Delete} functionality</strong></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>When user clicks <strong>{Delete} </strong>button on any data row;
+<ul>
+<li>Show delete confirmation popup with two buttons
+<ul>
+<li>{Confirm} and {Cancel}</li>
+</ul>
+</li>
+<li>If user clicks {Cancel}, exit the confirmation popup</li>
+<li>If user clicks {Confirm} on any row
+<ul>
+<li>Then identify the go to google sheet &ldquo;Suppliers&rdquo; &gt; named range &ldquo;RANGESUPPLIERS&rdquo; &gt; Column name &ldquo;Balance Payable&rdquo; on the same row. You can identify this using &ldquo;Supplier ID&rdquo;</li>
+<li>Check IF the amount in &ldquo;Balance Payable&rdquo; column is ZERO, Blank then delete the row and refresh the {supplierlist} HTML table</li>
+<li>But IF the amount in &ldquo;Balance Payable&rdquo; column is greater than ZERO, then do NOT delete. Give HTML alert error message &ldquo;Supplier has outstanding balance&rdquo;</li>
+</ul>
+</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Confirm} button is clicked.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.<br /> </li>
+</ul>
+</li>
+</ul>
+<ol start="7">
+<li><strong>OTHER INSTRUCTIONS.</strong></li>
+</ol>
+<ul>
+<li>Please write HTML, CSS, Javascript code in a single file &ldquo;suppliers.html&rdquo;</li>
+<li>Write GS code in a single file &ldquo;gssuppliers.gs&rdquo;</li>
+<li>Use unique names for HTML IDs, CSS classes, javascript functions and GS functions so that the function names do not conflict because there are multiple modules</li>
+<li>You can use the word &ldquo;sup&rdquo; at the start of each javascript and GS functions as well as for HTML and CSS IDs, classes and elements to make it unique.</li>
+<li>Use font awesome and include appropriate icons where necessary i.e., with links, input fields and buttons.</li>
+<li>Use white, light black, light aqua, teal and grey color combination</li>
+<li>Use Poppins, Roboto and Montserrat google fonts.</li>
+</ul>
+<p>&nbsp;</p>
+<p>ACT AS A PROFESSIONAL GOOGLE SHEETS APPS SCRIPT DEVELOPER.<br /> THOROUGHLY ANALYZE THE INSTRUCTIONS AND PROVIDE COMPLETE AND WORKING HTML, CSS, JAVASCRIPT, AND .GS (GOOGLE APPS SCRIPT) CODE FOR THIS MODULE</p>
+<p>&nbsp;</p>
+<p>REMEMBER TO CONSULT GOOGLE SHEETS APPS SCRIPT DOCUMENTATION IF YOU ARE UNSURE ABOUT ANYTHING.<br /> <a href="https://developers.google.com/apps-script">https://developers.google.com/apps-script</a></p>
+<p>&nbsp;</p>
+<h2><span style="color: #ff0000;"><strong>PROMPT 3</strong></span></h2>
+<h2><span style="color: #ff0000;"><strong>Instructions for Customers Module &ndash; customers.html and gscustomers.gs</strong></span></h2>
+<p>Here are the instructions for the Suppliers module</p>
+<ol>
+<li><strong>Sheets and named ranges<br /> <br /> </strong></li>
+</ol>
+<ul>
+<li>We will use 2 google sheets and named ranges for this module;</li>
+<li>Sheet names = &ldquo;Customers&rdquo; and &ldquo;Dimensions&rdquo;</li>
+<li>Named ranges = &ldquo;RANGECUSTOMERS&rdquo; and &ldquo;RANGEDIMENSIONS&rdquo;</li>
+<li>Column names on &ldquo;Customers&rdquo; sheet &gt; named range &ldquo;RANGECUSTOMERS&rdquo; are as follows. Column names are on Row # 1 and data should start from row # 2.</li>
+</ul>
+<p>&nbsp;</p>
+<table width="0">
+<tbody>
+<tr>
+<td>
+<p>Customer ID</p>
+</td>
+<td>
+<p>Customer Name</p>
+</td>
+<td>
+<p>Customer Contact</p>
+</td>
+<td>
+<p>Customer Email</p>
+</td>
+<td>
+<p>State</p>
+</td>
+<td>
+<p>City</p>
+</td>
+<td>
+<p>Customer Address</p>
+</td>
+<td>
+<p>Total Sales</p>
+</td>
+<td>
+<p>Total Receipts</p>
+</td>
+<td>
+<p>Balance Receivable</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<ul>
+<li>Column names on &ldquo;Dimensions&rdquo; sheet &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; are as follows. Column names are on Row # 1 and data should start from row # 2.</li>
+</ul>
+<table width="0">
+<tbody>
+<tr>
+<td>
+<p>State</p>
+</td>
+<td>
+<p>City</p>
+</td>
+<td>
+<p>PMT Mode</p>
+</td>
+<td>
+<p>PMT Status</p>
+</td>
+<td>
+<p>Shipping Status</p>
+</td>
+<td>
+<p>Item Type</p>
+</td>
+<td>
+<p>Item Category</p>
+</td>
+<td>
+<p>Item Subcategory</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<ol start="2">
+<li><strong>Main heading and subheading container</strong></li>
+</ol>
+<ul>
+<li>Create a single row (separate container)</li>
+<li>Give main heading: &lsquo;Customers(aligned left)</li>
+<li>And subheading: &lsquo;Add and manage your customers&rsquo; (aligned left)</li>
+</ul>
+<p><strong>&nbsp;</strong></p>
+<ol start="3">
+<li><strong>Navigation buttons and search bar container</strong></li>
+</ol>
+<ul>
+<li>Create following buttons aligned left
+<ul>
+<li>{New Customer}</li>
+<li>{New State}</li>
+<li>{New City}</li>
+</ul>
+</li>
+<li>Also create the following elements on the same row aligned right;
+<ul>
+<li>Drop-Down</li>
+<li>Search input box linked with drop-down</li>
+<li>{Search} button and {Clear} button</li>
+</ul>
+</li>
+<li>Specific instructions are provided later in this prompt.</li>
+</ul>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<ul>
+<li><strong>{New State} button</strong></li>
+</ul>
+<p>Open HTML popup form when <strong>{New State} </strong>button is clicked with proper width, length and design. Aligned center on the page.</p>
+<ul>
+<li>Provide following elements on the pop-up form
+<ul>
+<li>Title &ldquo;Add New State&rdquo;</li>
+<li>State Name = [Text box input &ndash; required]</li>
+</ul>
+</li>
+<li>Also provide 2 buttons aligned bottom right on this form
+<ul>
+<li>{Save} button and {Close} button</li>
+</ul>
+</li>
+<li>If user clicks {Close} button, exit the form</li>
+<li>If user clicks {Save} button;
+<ul>
+<li>Go to google sheet &ldquo;Dimensions&rdquo; &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; &gt; column name &ldquo;State&rdquo;</li>
+<li>And save the data on next available empty row</li>
+</ul>
+</li>
+<li>After saving the data, show html alert success message &ldquo;New State Added&rdquo;</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><strong>{New City} button</strong></li>
+</ul>
+<p>Open HTML popup form when <strong>{New City} </strong>button is clicked with proper width, length and design. Aligned center on the page.</p>
+<ul>
+<li>Provide following elements on the pop-up form
+<ul>
+<li>Title &ldquo;Add New City&rdquo;</li>
+<li>[State Name] = [Text box input &ndash; required]</li>
+</ul>
+</li>
+<li>Also provide 2 buttons aligned bottom right on this form
+<ul>
+<li>{Save} button and {Close} button</li>
+</ul>
+</li>
+<li>If user clicks {Close} button, exit the form</li>
+<li>If user clicks {Save} button;
+<ul>
+<li>Go to google sheet &ldquo;Dimensions&rdquo; &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; &gt; column name &ldquo;State&rdquo;</li>
+<li>And save the data on next available empty row</li>
+</ul>
+</li>
+<li>After saving the data, show html alert success message &ldquo;New City Added&rdquo;</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><strong>{New Customer} button</strong></li>
+</ul>
+<p>Open HTML popup form when <strong>{New Customer} </strong>button is clicked with proper width, length and design. Aligned center on the page.</p>
+<ul>
+<li>Provide following elements on the pop-up form
+<ul>
+<li>Title &ldquo;Add New Customer&rdquo;</li>
+<li>[Customer ID] = Read Only, Auto Generated
+<ol>
+<li>Provide a {Generate} button with [Customer ID] field.</li>
+<li>When {Generate} button is clicked, generate a unique random [Customer ID] starting with letter &ldquo;C&rdquo; followed by 5 random numbers. For example &ldquo;C56978&rdquo;</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Then go to google sheet &ldquo;Customers&rdquo; &gt; named range &ldquo;RANGECUSTOMERS&rdquo; &gt; column name &ldquo;Customer ID&rdquo;</li>
+</ul>
+<ol>
+<li>IF the [Customer ID] you generated already exist in this column then regenerate a new [Customer ID] because I don&rsquo;t want duplicate values in this column.</li>
+<li>IF the [Customer ID] you generated does NOT exist in this column, then populate the result in [Customer ID] column.</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+</ol>
+<ul>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>[Customer Name] = Text box input &ndash; required</li>
+<li>[Customer Contact] = Text box input &ndash; optional</li>
+<li>[Customer Email] = Text box input &ndash; optional</li>
+<li>[Customer State] = HTML Searchable Drop-Down using select2, chosen or other libraries &ndash; Required
+<ol>
+<li>Go to google sheet &ldquo;Dimensions&rdquo; &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; &gt; column name &ldquo;State&rdquo;</li>
+<li>Populate all values from this column in this drop-down excluding column name on row 1.</li>
+</ol>
+</li>
+</ul>
+<ul>
+<li>!!!Important!!! Only populate the rows containing data. Ignore blank/empty rows.</li>
+</ul>
+<ol>
+<li>You can use libraries like select2, chosen, or jquery UI to implement search functionality within the drop-down search box as appropriate.</li>
+</ol>
+<ul>
+<li>[Customer City] = HTML Searchable Drop-Down using select2, chosen or other libraries &ndash; Required
+<ol>
+<li>Go to google sheet &ldquo;Dimensions&rdquo; &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; &gt; column name &ldquo;City&rdquo;</li>
+<li>Populate all values from this column in this drop-down excluding column name on row 1.</li>
+</ol>
+</li>
+</ul>
+<ul>
+<li>!!!Important!!! Only populate the rows containing data. Ignore blank/empty rows.</li>
+</ul>
+<ol>
+<li>You can use libraries like select2, chosen, or jquery UI to implement search functionality within the drop-down search box as appropriate.</li>
+</ol>
+<ul>
+<li>[Supplier Address] = Text box input &ndash; optional<br /> </li>
+</ul>
+<ul>
+<li>Also provide 2 buttons aligned bottom right on this form
+<ul>
+<li>{Save} button and {Close} button</li>
+</ul>
+</li>
+<li>If user clicks {Close} button, exit the form</li>
+<li>If user clicks {Save} button;
+<ul>
+<li>Validate the form.</li>
+<li>Then go to google sheet &ldquo;Customers&rdquo; &gt; named range &ldquo;RANGECUSTOMERS&rdquo; and save the data from popup form on next available empty row as follows;
+<ul>
+<li>Save [Customer ID] in &ldquo;Customer ID&rdquo; column</li>
+<li>Save [Customer Name] in &ldquo;Customer Name&rdquo; column</li>
+<li>Save [Customer Contact] in &ldquo;Customer Contact&rdquo; column</li>
+<li>Save [Customer Email] in &ldquo;Customer Email&rdquo; column</li>
+<li>Save [Customer State] in &ldquo;State&rdquo; column</li>
+<li>Save [Customer City] in &ldquo;City&rdquo; column</li>
+<li>Save [Customer Address] in &ldquo;Customer Address&rdquo; column</li>
+</ul>
+</li>
+<li>After saving the data, show html alert success message &ldquo;New Customer Added&rdquo;</li>
+<li>And refresh {customerlist} HTML table to display updated records.</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<ol start="4">
+<li><strong>{customerlist} HTML table</strong></li>
+</ol>
+<p>After &ldquo;Navigation buttons and search bar container&rdquo;, create a new container.</p>
+<ul>
+<li>Go to google sheet &ldquo;Customer&rdquo; &gt; named range &ldquo;RANGECUSTOMERS&rdquo;</li>
+<li>And render all the column names and the data rows from that sheet/named range as an HTML table</li>
+<li>Note: Column names are already provided in the start.</li>
+<li>Important: Only display the data rows containing data. Ignore blank/empty rows.</li>
+<li>Give width to the <strong>{customerlist} HTML table column as follows;</strong>
+<ol>
+<li>Customer ID = 5%</li>
+<li>Customer Name = 15%</li>
+<li>Customer Contact = 8%</li>
+<li>Customer Email = 10%</li>
+<li>State = 7%</li>
+<li>City = 7%</li>
+<li>Customer Address = 20%</li>
+<li>Total Sales = 7%</li>
+<li>Total Receipts = 7%</li>
+<li>Balance Receivable = 7%</li>
+<li>&ldquo;Action Buttons&rdquo; = 7%</li>
+</ol>
+</li>
+<li>Provide &ldquo;Pagination&rdquo; functionality, and show 25 entries on a single page.</li>
+</ul>
+<p>Note: Instructions for {Action Buttons} are provided later in this prompt.</p>
+<ol start="5">
+<li><strong>Search functionality in {customerlist} HTML table</strong></li>
+</ol>
+<ul>
+<li>Refer to the initial instructions provided in &ldquo;Navigation buttons and search bar container&rdquo; section.</li>
+<li>In the drop-down, populate the following options (Search Criteria);
+<ul>
+<li>&ldquo;All&rdquo;</li>
+<li>&ldquo;Customer Name&rdquo;</li>
+<li>&ldquo;State&rdquo;</li>
+<li>&ldquo;City&rdquo;</li>
+</ul>
+</li>
+<li>If user selects &ldquo;Customer Name&rdquo; as search criteria, input search query in search box and click {Search} button
+<ul>
+<li>Match the search query in &ldquo;Customer Name&rdquo; column of {customerlist} HTML table and filter the records (Partial Match)</li>
+<li>If no data is found, display HTML alert message &ldquo;No matching data found&rdquo;</li>
+</ul>
+</li>
+<li>If user selects &ldquo;State&rdquo; as search criteria, input search query in search box and click {Search} button
+<ul>
+<li>Match the search query in &ldquo;State&rdquo; column of {customerlist} HTML table and filter the records (Partial Match)</li>
+<li>If no data is found, display HTML alert message &ldquo;No matching data found&rdquo;</li>
+</ul>
+</li>
+<li>If user selects &ldquo;City&rdquo; as search criteria, input search query in search box and click {Search} button
+<ul>
+<li>Match the search query in &ldquo;City&rdquo; column of {customerlist} HTML table and filter the records (Partial Match)</li>
+<li>If no data is found, display HTML alert message &ldquo;No matching data found&rdquo;</li>
+</ul>
+</li>
+<li>If user clicks {Clear} button
+<ul>
+<li>Remove search query from search box</li>
+<li>Reset the {customerlist} HTML table and display all records</li>
+</ul>
+</li>
+<li>By default, set the {customerlist} HTML table to display all records and keep the drop-down option = &ldquo;All&rdquo;</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Search} and {Clear} button is clicked.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>&nbsp;</p>
+<ol start="6">
+<li><strong>{Edit} {Update} {Delete} and {Cancel} &ldquo;Action Buttons&rdquo; in {customerlist} HTML table</strong></li>
+</ol>
+<ul>
+<li>With each data row on {customerlist} HTML table provide the following action buttons / links / or font-awesome icons as appropriate;
+<ul>
+<li><strong>{Edit} {Update} {Delete} and {Cancel}<br /> <br /> </strong></li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><strong>{Edit} {Update} and {Cancel} functionality</strong></li>
+<li>When user clicks <strong>{Edit} </strong>button on any data row
+<ul>
+<li>Turn that data row into editable mode on front end HTML table.</li>
+<li>Only turn the following columns into editable mode;
+<ul>
+<li>&ldquo;Customer Name&rdquo;</li>
+<li>&ldquo;Customer Contact&rdquo;</li>
+<li>&ldquo;Customer Email&rdquo;</li>
+<li>&ldquo;State&rdquo;</li>
+<li>&ldquo;City&rdquo;</li>
+<li>&ldquo;Customer Address&rdquo;</li>
+</ul>
+</li>
+<li>For the columns &ldquo;State&rdquo; and &ldquo;City&rdquo;
+<ul>
+<li>Make sure to use [Customer State] and [Customer City] drop-downs in edit mode as we have already built them while dealing with {New Customer} button</li>
+</ul>
+</li>
+<li>After making the changes, when user clicks {Update} button;
+<ul>
+<li>Validate the data</li>
+<li>Save the update back into the same row on Google sheet &ldquo;Customers&rdquo; named range &ldquo;RANGECUSTOMERS&rdquo;</li>
+<li>You might want to create a row recognition number function for this.</li>
+</ul>
+</li>
+<li>After updating the data, show HTML alert success message &ldquo;Supplier Details Updated&rdquo;</li>
+<li>Then refresh the {supplierlist} HTML table to display the updated records</li>
+</ul>
+</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Edit} and {Update} buttons are clicked.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>&nbsp;</p>
+<p>Important!: {Update} and {Cancel} button should only be visible after user has clicked the {Edit} button.</p>
+<p>By default, only {Edit} and {Delete} buttons will be visible.</p>
+<p>IF user clicks {Edit} and then click {Cancel} then don&rsquo;t update the data and revert back the row into view mode.<br /> </p>
+<ul>
+<li><strong>{Delete} functionality</strong></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>When user clicks <strong>{Delete} </strong>button on any data row;
+<ul>
+<li>Show delete confirmation popup with two buttons
+<ul>
+<li>{Confirm} and {Cancel}</li>
+</ul>
+</li>
+<li>If user clicks {Cancel}, exit the confirmation popup</li>
+<li>If user clicks {Confirm} on any row
+<ul>
+<li>Then go to google sheet &ldquo;Customers&rdquo; &gt; named range &ldquo;RANGECUSTOMERS&rdquo; &gt; Column name &ldquo;Balance Receivable&rdquo; on the same row. You can identify this using &ldquo;Customer ID&rdquo;</li>
+<li>Check IF the amount in &ldquo;Balance Receivable&rdquo; column is ZERO, Blank then delete the row and refresh the {customerlist} HTML table</li>
+<li>But IF the amount in &ldquo;Balance Receivable&rdquo; column is greater than ZERO, then do NOT delete. Give HTML alert error message &ldquo;Customer has outstanding balance&rdquo;</li>
+</ul>
+</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Confirm} button is clicked.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.<br /> </li>
+</ul>
+</li>
+</ul>
+<ol start="7">
+<li><strong>OTHER INSTRUCTIONS.</strong></li>
+</ol>
+<ul>
+<li>Please write HTML, CSS, Javascript code in a single file &ldquo;customers.html&rdquo;</li>
+<li>Write GS code in a single file &ldquo;gscustomers.gs&rdquo;</li>
+<li>Use unique names for HTML IDs, CSS classes, javascript functions and GS functions so that the function names do not conflict because there are multiple modules</li>
+<li>You can use the word &ldquo;cust&rdquo; at the start of each javascript and GS functions as well as for HTML and CSS IDs, classes and elements to make it unique.</li>
+<li>Use font awesome and include appropriate icons where necessary i.e., with links, input fields and buttons.</li>
+<li>Use white, light black, light aqua, teal and grey color combination</li>
+<li>Use Poppins, Roboto and Montserrat google fonts.</li>
+</ul>
+<p>&nbsp;</p>
+<p>ACT AS A PROFESSIONAL GOOGLE SHEETS APPS SCRIPT DEVELOPER.<br /> THOROUGHLY ANALYZE THE INSTRUCTIONS AND PROVIDE COMPLETE AND WORKING HTML, CSS, JAVASCRIPT, AND .GS (GOOGLE APPS SCRIPT) CODE FOR THIS MODULE</p>
+<p>&nbsp;</p>
+<p>REMEMBER TO CONSULT GOOGLE SHEETS APPS SCRIPT DOCUMENTATION IF YOU ARE UNSURE ABOUT ANYTHING.<br /> <a href="https://developers.google.com/apps-script">https://developers.google.com/apps-script</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2><span style="color: #ff0000;"><strong>PROMPT 4</strong></span></h2>
+<h2><span style="color: #ff0000;"><strong>Instructions for Inventory Module &ndash; inventory.html and gsinventory.gs</strong></span></h2>
+<ol>
+<li><strong>Sheets and named ranges<br /> <br /> </strong></li>
+</ol>
+<ul>
+<li>We will use 2 google sheets and named ranges for this module;</li>
+<li>Sheet names = &ldquo;InventoryItems&rdquo; and &ldquo;Dimensions&rdquo;</li>
+<li>Named ranges = &ldquo;RANGEINVENTORYITEMS&rdquo; and &ldquo;RANGEDIMENSIONS&rdquo;</li>
+<li>Column names on &ldquo;InventoryItems&rdquo; sheet &gt; named range &ldquo;RANGEINVENTORYITEMS&rdquo; are as follows. Column names are on Row # 1 and data should start from row # 2.</li>
+</ul>
+<table width="0">
+<tbody>
+<tr>
+<td>
+<p>Item ID</p>
+</td>
+<td>
+<p>Item Type</p>
+</td>
+<td>
+<p>Item Category</p>
+</td>
+<td>
+<p>Item Subcategory</p>
+</td>
+<td>
+<p>Item Name</p>
+</td>
+<td>
+<p>QTY Purchased</p>
+</td>
+<td>
+<p>QTY Sold</p>
+</td>
+<td>
+<p>Remaining QTY</p>
+</td>
+<td>
+<p>Reorder Level</p>
+</td>
+<td>
+<p>Reorder Required</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<ul>
+<li>Column names on &ldquo;Dimensions&rdquo; sheet &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; are as follows. Column names are on Row # 1 and data should start from row # 2.</li>
+</ul>
+<table width="0">
+<tbody>
+<tr>
+<td>
+<p>State</p>
+</td>
+<td>
+<p>City</p>
+</td>
+<td>
+<p>PMT Mode</p>
+</td>
+<td>
+<p>PMT Status</p>
+</td>
+<td>
+<p>Shipping Status</p>
+</td>
+<td>
+<p>Item Type</p>
+</td>
+<td>
+<p>Item Category</p>
+</td>
+<td>
+<p>Item Subcategory</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<ol start="2">
+<li><strong>Main heading and subheading</strong></li>
+</ol>
+<ul>
+<li>Create a single row (separate container)</li>
+<li>Give main heading: &lsquo;Inventory Items&rsquo; (aligned left)</li>
+<li>And subheading: &lsquo;Add and manage your inventory items&rsquo; (aligned left)<br /> </li>
+</ul>
+<ol start="3">
+<li><strong>Navigation buttons and search bar container</strong></li>
+</ol>
+<ul>
+<li>Create following buttons aligned left
+<ul>
+<li>{Add Inventory Item}</li>
+<li>{Add Item Type}</li>
+<li>{Add Item Category}</li>
+<li>{Add Item Subcategory}</li>
+</ul>
+</li>
+<li>Also create the following elements on the same row aligned right;
+<ul>
+<li>Drop-Down</li>
+<li>Search input box linked with drop-down</li>
+<li>{Search} button and {Clear} button</li>
+</ul>
+</li>
+<li>Specific instructions are provided later in this prompt.</li>
+</ul>
+<p><strong>(i) {Add Item Type} button</strong></p>
+<p>Open HTML popup form when <strong>{Add Item Type} </strong>button is clicked with proper width, length and design. Aligned center on the page.</p>
+<ul>
+<li>Provide following elements on the pop-up form
+<ul>
+<li>Title &ldquo;Add New Item Type&rdquo;</li>
+<li>Item Type = [Text box input &ndash; required]</li>
+</ul>
+</li>
+<li>Also provide 2 buttons aligned bottom right on this form
+<ul>
+<li>{Save} button and {Close} button</li>
+</ul>
+</li>
+<li>If user clicks {Close} button, exit the form</li>
+<li>If user clicks {Save} button;
+<ul>
+<li>Go to google sheet &ldquo;Dimensions&rdquo; &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; &gt; column name &ldquo;Item Type&rdquo;</li>
+<li>And save the data on next available empty row</li>
+</ul>
+</li>
+<li>After saving the data, show html alert success message &ldquo;New Item Type Added&rdquo;</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p><strong>(ii) {Add Item Category} button</strong></p>
+<p>Open HTML popup form when <strong>{Add Item Category} </strong>button is clicked with proper width, length and design. Aligned center on the page.</p>
+<ul>
+<li>Provide following elements on the pop-up form
+<ul>
+<li>Title &ldquo;Add New Item Category&rdquo;</li>
+<li>Item Category = [Text box input &ndash; required]</li>
+</ul>
+</li>
+<li>Also provide 2 buttons aligned bottom right on this form
+<ul>
+<li>{Save} button and {Close} button</li>
+</ul>
+</li>
+<li>If user clicks {Close} button, exit the form</li>
+<li>If user clicks {Save} button;
+<ul>
+<li>Go to google sheet &ldquo;Dimensions&rdquo; &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; &gt; column name &ldquo;Item Category&rdquo;</li>
+<li>And save the data on next available empty row</li>
+</ul>
+</li>
+<li>After saving the data, show html alert success message &ldquo;New Item Category Added&rdquo;</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>(iii) {Add Item Subcategory} button</strong></p>
+<p>Open HTML popup form when <strong>{Add Item Subcategory} </strong>button is clicked with proper width, length and design. Aligned center on the page.</p>
+<ul>
+<li>Provide following elements on the pop-up form
+<ul>
+<li>Title &ldquo;Add New Item Subcategory&rdquo;</li>
+<li>Item Subcategory = [Text box input &ndash; required]</li>
+</ul>
+</li>
+<li>Also provide 2 buttons aligned bottom right on this form
+<ul>
+<li>{Save} button and {Close} button</li>
+</ul>
+</li>
+<li>If user clicks {Close} button, exit the form</li>
+<li>If user clicks {Save} button;
+<ul>
+<li>Go to google sheet &ldquo;Dimensions&rdquo; &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; &gt; column name &ldquo;Item Subcategory&rdquo;</li>
+<li>And save the data on next available empty row</li>
+</ul>
+</li>
+<li>After saving the data, show html alert success message &ldquo;New Item Subcategory Added&rdquo;</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p><strong>(iv) {Add Inventory Item} button</strong></p>
+<p>Open HTML popup form when <strong>{Add Inventory Item} </strong>button is clicked with proper width, length and design. Aligned center on the page.</p>
+<ul>
+<li>Provide following elements on the pop-up form
+<ul>
+<li>Title &ldquo;Add New Inventory Item&rdquo;</li>
+<li>[Item ID] = Read Only, Auto Generated
+<ol>
+<li>Provide a {Generate} button with [Item ID] field.</li>
+<li>When {Generate} button is clicked, generate a unique random [Item ID] starting with letter &ldquo;P&rdquo; followed by 5 random numbers. For example &ldquo;P56978&rdquo;</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Then go to google sheet &ldquo;InventoryItems&rdquo; &gt; named range &ldquo;RANGEINVENTORYITEMS&rdquo; &gt; column name &ldquo;Item ID&rdquo;</li>
+</ul>
+<ol>
+<li>IF the [Item ID] you generated already exist in this column then regenerate a new [Item ID] because I don&rsquo;t want duplicate values in this column.</li>
+<li>IF the [Item ID] you generated does NOT exist in this column, then populate the result in [Item ID] field.</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+</ol>
+<ul>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.<br /> </li>
+</ul>
+<ul>
+<li><strong>[Item Type] = </strong>HTML Searchable Drop-Down using select2, chosen or other libraries &ndash; Required
+<ul>
+<li>Go to google sheet &ldquo;Dimensions&rdquo; &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; &gt; column name &ldquo;Item Type&rdquo;</li>
+<li>Populate all values from this column in this drop-down excluding column name on row 1.</li>
+<li>!!!Important!!! Only populate the rows containing data. Ignore blank/empty rows.</li>
+<li>You can use libraries like select2, chosen, or jquery UI to implement search functionality within the drop-down search box as appropriate.<br /> </li>
+</ul>
+</li>
+<li><strong>[Item Category] = </strong>HTML Searchable Drop-Down using select2, chosen or other libraries &ndash; Required
+<ul>
+<li>Go to google sheet &ldquo;Dimensions&rdquo; &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; &gt; column name &ldquo;Item Category&rdquo;</li>
+<li>Populate all values from this column in this drop-down excluding column name on row 1.</li>
+<li>!!!Important!!! Only populate the rows containing data. Ignore blank/empty rows.</li>
+<li>You can use libraries like select2, chosen, or jquery UI to implement search functionality within the drop-down search box as appropriate.<br /> </li>
+</ul>
+</li>
+<li><strong>[Item Subcategory] = </strong>HTML Searchable Drop-Down using select2, chosen or other libraries &ndash; Required
+<ul>
+<li>Go to google sheet &ldquo;Dimensions&rdquo; &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; &gt; column name &ldquo;Item Subcategory&rdquo;</li>
+<li>Populate all values from this column in this drop-down excluding column name on row 1.</li>
+<li>!!!Important!!! Only populate the rows containing data. Ignore blank/empty rows.</li>
+<li>You can use libraries like select2, chosen, or jquery UI to implement search functionality within the drop-down search box as appropriate.<br /> </li>
+</ul>
+</li>
+<li><strong>[Item Name]</strong> = Text box input &ndash; required</li>
+<li><strong>[Reorder Level] </strong>[Number only &ndash; 0 decimal place &ndash; Required]<br /> </li>
+<li>Also provide 2 buttons aligned bottom right on this form
+<ul>
+<li>{Save} button, and {Close} button</li>
+</ul>
+</li>
+<li>If user clicks {Close} button, exit the form</li>
+<li>If user clicks {Save} button;
+<ul>
+<li>Validate the form.</li>
+<li>Then go to google sheet &ldquo;InventoryItems&rdquo; &gt; named range &ldquo;RANGEINVENTORYITEMS&rdquo; and save the data from popup form on next available empty row as follows;
+<ul>
+<li>Save [Item ID] in &ldquo;Item ID&rdquo; column</li>
+<li>Save [Item Type] in &ldquo;Item Type&rdquo; column</li>
+<li>Save [Item Category] in &ldquo;Item Category&rdquo; column</li>
+<li>Save [Item Subcategory] in &ldquo;Item Subcategory&rdquo; column</li>
+<li>Save [Item Name] in &ldquo;Item Name&rdquo; column</li>
+<li>Save [Reorder Level] in &ldquo;Reorder Level&rdquo; column</li>
+</ul>
+</li>
+<li>After saving the data, show html alert success message &ldquo;New Item Added&rdquo;</li>
+<li>And refresh {itemlist} HTML table to display updated records.</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<ol start="4">
+<li><strong>{itemlist} HTML table</strong></li>
+</ol>
+<p>After &ldquo;Navigation buttons and search bar container&rdquo;, create a new container.</p>
+<ul>
+<li>Go to google sheet &ldquo;InventoryItems&rdquo; &gt; named range &ldquo;RANGEINVENTORYITEMS&rdquo;</li>
+<li>And render all the column names and the data rows from that sheet/named range as an HTML table</li>
+<li>Note: Column names are already provided in the start.</li>
+<li>Important: Only display the data rows containing data. Ignore blank/empty rows.</li>
+<li>Give width to the <strong>{itemlist} HTML table column as follows;</strong>
+<ul>
+<li>Item ID = 5%</li>
+<li>Item Type = 10%</li>
+<li>Item Category = 10%</li>
+<li>Item Subcategory = 12%</li>
+<li>Item Name = 25%</li>
+<li>QTY Purchased = 7%</li>
+<li>QTY Sold = 7%</li>
+<li>Remaining QTY = 7%</li>
+<li>Reorder Level = 5%</li>
+<li>Reorder Required = 5%</li>
+<li>"Action Buttons" = 7%<br /> </li>
+</ul>
+</li>
+<li>Provide &ldquo;Pagination&rdquo; functionality, and show 25 entries on a single page.</li>
+</ul>
+<p>Note: Instructions for {Action Buttons} are provided later in this prompt.</p>
+<p>&nbsp;</p>
+<ol start="5">
+<li><strong>Search functionality in {itemlist} HTML table</strong></li>
+</ol>
+<ul>
+<li>Refer to the initial instructions provided in &ldquo;Navigation buttons and search bar container&rdquo; section.</li>
+<li>In the drop-down, populate the following options (Search Criteria);
+<ul>
+<li>&ldquo;All&rdquo;</li>
+<li>&ldquo;Item Type&rdquo;</li>
+<li>&ldquo;Item Category&rdquo;</li>
+<li>&ldquo;Item Subcategory&rdquo;</li>
+<li>&ldquo;Item Name&rdquo;</li>
+<li>&ldquo;Reorder Required&rdquo;</li>
+</ul>
+</li>
+<li>If user selects &ldquo;Item Type&rdquo; as search criteria, input search query in search box and click {Search} button
+<ul>
+<li>Match the search query in &ldquo;Item Type&rdquo; column of {itemlist} HTML table and filter the records (Partial Match)</li>
+<li>If no data is found, display HTML alert message &ldquo;No matching data found&rdquo;<br /> </li>
+</ul>
+</li>
+<li>If user selects &ldquo;Item Category&rdquo; as search criteria, input search query in search box and click {Search} button
+<ul>
+<li>Match the search query in &ldquo;Item Category&rdquo; column of {itemlist} HTML table and filter the records (Partial Match)</li>
+<li>If no data is found, display HTML alert message &ldquo;No matching data found&rdquo;</li>
+</ul>
+</li>
+<li>Similarly, build search functionality for other remaining criteria i.e.,
+<ul>
+<li>Drop-down = &ldquo;Item Subcategory&rdquo; = Search and filter in &ldquo;Item Subcategory&rdquo; column of {itemlist} HTML table</li>
+<li>Drop-down = &ldquo;Item Name&rdquo; = Search and filter in &ldquo;Item Name&rdquo; column of {itemlist} HTML table<br /> </li>
+</ul>
+</li>
+<li>If user clicks {Clear} button
+<ul>
+<li>Remove search query from search box</li>
+<li>Reset the {itemlist} HTML table and display all records</li>
+</ul>
+</li>
+<li>By default, set the {itemlist} HTML table to display all records and keep the drop-down option = &ldquo;All&rdquo;</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Search} and {Clear} button is clicked.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.<br /> </li>
+</ul>
+<p>&nbsp;</p>
+<ol start="6">
+<li><strong>{Edit} {Update} {Delete} and {Cancel} &ldquo;Action Buttons&rdquo; in {itemlist} HTML table</strong></li>
+</ol>
+<ul>
+<li>With each data row on {itemlist} HTML table provide the following action buttons / links / or font-awesome icons as appropriate;
+<ul>
+<li><strong>{Edit} {Update} {Delete} and {Cancel}<br /> <br /> </strong></li>
+</ul>
+</li>
+<li><strong>{Edit} {Update} and {Cancel} functionality</strong></li>
+<li>When user clicks <strong>{Edit} </strong>button on any data row
+<ul>
+<li>Turn that data row into editable mode on front end HTML table.</li>
+<li>Only turn the following columns into editable mode;
+<ul>
+<li>&ldquo;Item Type&rdquo;</li>
+<li>&ldquo;Item Category&rdquo;</li>
+<li>&ldquo;Item Subcategory&rdquo;</li>
+<li>&ldquo;Item Name&rdquo;</li>
+<li>&ldquo;Reorder Level&rdquo;</li>
+</ul>
+</li>
+<li>For the columns &ldquo;Item Type&rdquo;, &ldquo;Item Category&rdquo; and &ldquo;Item Subcategory&rdquo;
+<ul>
+<li>Make sure to use [Item Type], [Item Category] and [Item Subcategory] drop-downs in edit mode as we have already built them while dealing with {Add Inventory Item} button</li>
+</ul>
+</li>
+<li>After making the changes, when user clicks {Update} button;
+<ul>
+<li>Validate the data</li>
+<li>Save the update back into the same row on Google sheet &ldquo;InventoryItems&rdquo; named range &ldquo;RANGEINVENTORYITEMS&rdquo;</li>
+<li>You might want to create a row recognition number function for this.</li>
+</ul>
+</li>
+<li>After updating the data, show HTML alert success message &ldquo;Inventory Item Updated&rdquo;</li>
+<li>Then refresh the {itemlist} HTML table to display the updated records</li>
+</ul>
+</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Edit} and {Update} buttons are clicked.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>Important!: {Update} and {Cancel} button should only be visible after user has clicked the {Edit} button.</p>
+<p>By default, only {Edit} and {Delete} buttons will be visible.</p>
+<p>IF user clicks {Edit} and then click {Cancel} then don&rsquo;t update the data and revert back the row into view mode.</p>
+<p>&nbsp;</p>
+<ul>
+<li><strong>{Delete} functionality</strong></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>When user clicks <strong>{Delete} </strong>button on any data row;
+<ul>
+<li>Show delete confirmation popup with two buttons
+<ul>
+<li>{Confirm} and {Cancel}</li>
+</ul>
+</li>
+<li>If user clicks {Cancel}, exit the confirmation popup</li>
+<li>If user clicks {Confirm} on any row
+<ul>
+<li>Then identify the go to google sheet &ldquo;InventoryItems&rdquo; &gt; named range &ldquo;RANGEINVENTORYITEMS&rdquo; &gt; Column name &ldquo;Remaining QTY&rdquo; on the same row. You can identify this using &ldquo;Item ID&rdquo;</li>
+<li>Check IF the number in &ldquo;Remaining QTY&rdquo; column is ZERO, Blank then delete the row and refresh the {itemlist} HTML table</li>
+<li>But IF the amount in &ldquo;Remaining QTY&rdquo; column is greater than ZERO, then do NOT delete. Give HTML alert error message &ldquo;Item with stock in hand can&rsquo;t be deleted&rdquo;</li>
+</ul>
+</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Confirm} button is clicked.</li>
+</ul>
+</li>
+</ul>
+<p>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</p>
+<ol start="7">
+<li><strong>OTHER INSTRUCTIONS.</strong></li>
+</ol>
+<ul>
+<li>Please write HTML, CSS, Javascript code in a single file &ldquo;inventory.html&rdquo;</li>
+<li>Write GS code in a single file &ldquo;gsinventory.gs&rdquo;</li>
+<li>Use unique names for HTML IDs, CSS classes, javascript functions and GS functions so that the function names do not conflict because there are multiple modules</li>
+<li>You can use the word &ldquo;item&rdquo; at the start of each javascript and GS functions as well as for HTML and CSS IDs, classes and elements to make it unique.</li>
+<li>Use font awesome and include appropriate icons where necessary i.e., with links, input fields and buttons.</li>
+<li>Use white, light black, light aqua, teal and grey color combination</li>
+<li>Use Poppins, Roboto and Montserrat google fonts.</li>
+</ul>
+<p>&nbsp;</p>
+<p>ACT AS A PROFESSIONAL GOOGLE SHEETS APPS SCRIPT DEVELOPER.<br /> THOROUGHLY ANALYZE THE INSTRUCTIONS AND PROVIDE COMPLETE AND WORKING HTML, CSS, JAVASCRIPT, AND .GS (GOOGLE APPS SCRIPT) CODE FOR THIS MODULE</p>
+<p>REMEMBER TO CONSULT GOOGLE SHEETS APPS SCRIPT DOCUMENTATION IF YOU ARE UNSURE ABOUT ANYTHING.<br /> <a href="https://developers.google.com/apps-script">https://developers.google.com/apps-script</a></p>
+<p>&nbsp;</p>
+<h2><span style="color: #ff0000;"><strong>PROMPT 5</strong></span></h2>
+<h2><span style="color: #ff0000;"><strong>Instructions for Purchases Module &ndash; purchases.html and gspurchases.gs</strong></span></h2>
+<p>Here are the instructions for the Purchases module<br /> </p>
+<ol>
+<li><strong>Sheets and named ranges</strong></li>
+</ol>
+<ul>
+<li>We will use 2 google sheets and named ranges for this module;</li>
+<li>Sheet names = &ldquo;PurchaseOrders&rdquo;, &ldquo;PurchaseDetails&ldquo; and &ldquo;Dimensions&rdquo;</li>
+<li>Named ranges = &ldquo;RANGEPO&rdquo;, &ldquo;RANGEPD&rdquo; and &ldquo;RANGEDIMENSIONS&rdquo;</li>
+<li>Column names on &ldquo;PurchaseOrders&rdquo; sheet &gt; named range &ldquo;RANGEPO&rdquo; are as follows. Column names are on Row # 1 and data should start from row # 2.</li>
+</ul>
+<p><strong>&nbsp;</strong></p>
+<table width="0">
+<tbody>
+<tr>
+<td>
+<p>Date</p>
+</td>
+<td>
+<p>PO ID</p>
+</td>
+<td>
+<p>Supplier ID</p>
+</td>
+<td>
+<p>Supplier Name</p>
+</td>
+<td>
+<p>Bill Num</p>
+</td>
+<td>
+<p>State</p>
+</td>
+<td>
+<p>City</p>
+</td>
+<td>
+<p>Total Amount</p>
+</td>
+<td>
+<p>Total Paid</p>
+</td>
+<td>
+<p>PO Balance</p>
+</td>
+<td>
+<p>PMT Status</p>
+</td>
+<td>
+<p>Shipping Status</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&nbsp;</strong></p>
+<table width="803">
+<tbody>
+<tr>
+<td width="27">
+<p>Date</p>
+</td>
+<td>
+<p>PO ID</p>
+</td>
+<td>
+<p>Detail ID</p>
+</td>
+<td>
+<p>Supplier ID</p>
+</td>
+<td>
+<p>Supplier Name</p>
+</td>
+<td>
+<p>State</p>
+</td>
+<td>
+<p>City</p>
+</td>
+<td>
+<p>Bill Num</p>
+</td>
+<td>
+<p>Item ID</p>
+</td>
+<td>
+<p>Item Type</p>
+</td>
+<td>
+<p>Item Category</p>
+</td>
+<td>
+<p>Item Subcategory</p>
+</td>
+<td>
+<p>Item Name</p>
+</td>
+<td>
+<p>QTY Purchased</p>
+</td>
+<td>
+<p>Unit Cost</p>
+</td>
+<td>
+<p>Cost Excl Tax</p>
+</td>
+<td>
+<p>Tax Rate</p>
+</td>
+<td>
+<p>Total Tax</p>
+</td>
+<td>
+<p>Cost Incl Tax</p>
+</td>
+<td>
+<p>Shipping Fees</p>
+</td>
+<td>
+<p>Total Purchase Price</p>
+</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Column names on &ldquo;PurchaseDetails&rdquo; sheet &gt; named range &ldquo;RANGEPD&rdquo; are as follows. Column names are on Row # 1 and data should start from row # 2.</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>Column names on &ldquo;Dimensions&rdquo; sheet &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; are as follows. Column names are on Row # 1 and data should start from row # 2.</li>
+</ul>
+<table width="0">
+<tbody>
+<tr>
+<td>
+<p>State</p>
+</td>
+<td>
+<p>City</p>
+</td>
+<td>
+<p>PMT Mode</p>
+</td>
+<td>
+<p>PMT Status</p>
+</td>
+<td>
+<p>Shipping Status</p>
+</td>
+<td>
+<p>Item Type</p>
+</td>
+<td>
+<p>Item Category</p>
+</td>
+<td>
+<p>Item Subcategory</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&nbsp;</strong></p>
+<ul>
+<li><strong>Important Note: </strong>
+<ul>
+<li>The column name &ldquo;Date&rdquo; on google sheet &ldquo;PurchaseOrders&rdquo; (named range = &ldquo;RANGEPO&rdquo;) and google sheet &ldquo;PurchaseDetails&rdquo; (named range = &ldquo;RANGEPD&rdquo;) is formatted as a date as follows &ldquo;MM/DD/YYYY&rdquo;</li>
+<li>So please use a proper date object utility for this column when rendering HTML tables from google sheets on front-end.<br /> </li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li><strong>Main heading and subheading</strong></li>
+</ol>
+<ul>
+<li>Create a single row (separate container)</li>
+<li>Give main heading: &lsquo;Purchase Orders&rsquo; (aligned left)</li>
+</ul>
+<p>And subheading: &lsquo;Add and manage your POs&rsquo; (aligned left)<br /> </p>
+<ol start="3">
+<li><strong>Navigation buttons and search bar container<br /> <br /> </strong></li>
+</ol>
+<ul>
+<li>Create following buttons aligned left
+<ol>
+<li>{New PO}</li>
+<li>{PMT Status}</li>
+<li>{Shipping Status}</li>
+</ol>
+</li>
+<li>Also create the following elements on the same row aligned right;
+<ol>
+<li>Drop-Down</li>
+<li>Search input box linked with drop-down</li>
+<li>{Search} button and {Clear} button</li>
+</ol>
+</li>
+<li>Specific instructions are provided later in this prompt.</li>
+</ul>
+<p><strong>(i) {PMT Status} button</strong></p>
+<p>Open HTML popup form when <strong>{PMT Status} </strong>button is clicked with proper width, length and design. Aligned center on the page.</p>
+<ul>
+<li>Provide following elements on the pop-up form
+<ul>
+<li>Title &ldquo;Configure PMT Status&rdquo;</li>
+<li>[PMT Status] = [Text box input &ndash; required]</li>
+</ul>
+</li>
+<li>Also provide 2 buttons aligned bottom right on this form
+<ul>
+<li>{Save} button and {Close} button</li>
+</ul>
+</li>
+<li>If user clicks {Close} button, exit the form</li>
+<li>If user clicks {Save} button;
+<ul>
+<li>Go to google sheet &ldquo;Dimensions&rdquo; &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; &gt; column name &ldquo;PMT Status&rdquo;</li>
+<li>And save the data on next available empty row</li>
+</ul>
+</li>
+<li>After saving the data, show html alert success message &ldquo;New PMT Status Added&rdquo;</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p><strong>(ii) {Shipping Status} button</strong></p>
+<p>Open HTML popup form when <strong>{Shipping Status} </strong>button is clicked with proper width, length and design. Aligned center on the page.</p>
+<ul>
+<li>Provide following elements on the pop-up form
+<ul>
+<li>Title &ldquo;Configure Shipping Status&rdquo;</li>
+<li>[Shipping Status] = [Text box input &ndash; required]</li>
+</ul>
+</li>
+<li>Also provide 2 buttons aligned bottom right on this form
+<ul>
+<li>{Save} button and {Close} button</li>
+</ul>
+</li>
+<li>If user clicks {Close} button, exit the form</li>
+<li>If user clicks {Save} button;
+<ul>
+<li>Go to google sheet &ldquo;Dimensions&rdquo; &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; &gt; column name &ldquo;Shipping Status&rdquo;</li>
+<li>And save the data on next available empty row</li>
+</ul>
+</li>
+<li>After saving the data, show html alert success message &ldquo;New PMT Status Added&rdquo;</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p><strong>(iii) {New PO} button</strong></p>
+<p>This part is tricky. Handle it carefully</p>
+<ul>
+<li>Open HTML popup form when <strong>{New PO} </strong>button is clicked</li>
+<li>This HTML form should cover 100% of the page or auto-width and provide following elements on the pop-up form</li>
+<li>Title &ldquo;Create New PO&rdquo;</li>
+</ul>
+<p><strong>SECTION 1</strong></p>
+<ul>
+<li>[PO ID] = Read Only, Auto Generated
+<ul>
+<li>Provide a {Generate} button with [PO ID] field.</li>
+<li>When {Generate} button is clicked, generate a unique random [PO ID] starting with letters &ldquo;PO&rdquo; followed by 5 random numbers. For example &ldquo;PO56978&rdquo;</li>
+<li>Then go to google sheet &ldquo;PurchaseDetails&rdquo; &gt; named range &ldquo;RANGEPD&rdquo; &gt; column name &ldquo;PO ID&rdquo;</li>
+<li>IF the [PO ID] you generated already exist in this column then regenerate a new [PO ID] because I don&rsquo;t want duplicate values in this column.</li>
+<li>IF the [PO ID] you generated does NOT exist in this column, then populate the result in [PO ID] field.</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.<br /> </li>
+</ul>
+</li>
+<li><strong>[Supplier Name] = </strong>HTML Searchable Drop-Down using select2, chosen or other libraries &ndash; Required
+<ul>
+<li>Go to google sheet &ldquo;Suppliers&rdquo; &gt; named range &ldquo;RANGESUPPLIERS&rdquo; &gt; column name &ldquo;Supplier Name&rdquo;</li>
+<li>Populate all values from this column in this drop-down excluding column name on row 1.</li>
+<li>!!!Important!!! Only populate the rows containing data. Ignore blank/empty rows.</li>
+</ul>
+</li>
+</ul>
+<p>You can use libraries like select2, chosen, or jquery UI to implement search functionality within the drop-down search box as appropriate.</p>
+<ul>
+<li><strong>[Supplier ID] =</strong> Read Only. Auto Fetch based on [Supplier Name]
+<ul>
+<li>Get the [Supplier Name] selected by user from the drop-down.</li>
+<li>Based on the [Supplier Name], get the value of [Supplier ID] from the same row of google sheet &ldquo;Suppliers&rdquo; &gt; named range &ldquo;RANGESUPPLIERS&rdquo; &gt; column name &ldquo;Supplier ID&rdquo;</li>
+<li>And populate in <strong>[Supplier ID]</strong> field<br /> </li>
+</ul>
+</li>
+<li><strong>[State] =</strong> Read Only. Auto Fetch based on [Supplier ID]
+<ul>
+<li>Get the [Supplier ID] populated in the [Supplier ID] field.</li>
+<li>Based on the [Supplier ID], get the value of [State] from the same row of google sheet &ldquo;Suppliers&rdquo; &gt; named range &ldquo;RANGESUPPLIERS&rdquo; &gt; column name &ldquo;State&rdquo;</li>
+<li>And populate in <strong>[State]</strong> field<br /> </li>
+</ul>
+</li>
+<li><strong>[City] =</strong> Read Only. Auto Fetch based on [Supplier ID]
+<ul>
+<li>Get the [Supplier ID] populated in the [Supplier ID] field.</li>
+<li>Based on the [Supplier ID], get the value of [City] from the same row of google sheet &ldquo;Suppliers&rdquo; &gt; named range &ldquo;RANGESUPPLIERS&rdquo; &gt; column name &ldquo;City&rdquo;</li>
+<li>And populate in <strong>[City]</strong> field<br /> </li>
+</ul>
+</li>
+<li><strong>[Bill Num] </strong>= Text box input &ndash; required <br /> </li>
+<li><strong>[PO Date] </strong>= Date Picker - required</li>
+</ul>
+<p><strong>&nbsp;</strong></p>
+<p><strong>SECTION 2 [FUNCTIONALITY TO ADD MULTIPLE ITEMS TO PO]</strong></p>
+<ul>
+<li>Now you need to create a table with columns where user can add multiple rows by clicking {addrow} link / button / icon</li>
+<li>Also provide {removerow} link / button / icon which will remove the row.</li>
+</ul>
+<table width="730">
+<tbody>
+<tr>
+<td>
+<p>Date</p>
+</td>
+<td>
+<p>PO ID</p>
+</td>
+<td>
+<p>Detail ID</p>
+</td>
+<td>
+<p>Supplier ID</p>
+</td>
+<td>
+<p>Supplier Name</p>
+</td>
+<td>
+<p>State</p>
+</td>
+<td>
+<p>City</p>
+</td>
+<td>
+<p>Bill Num</p>
+</td>
+<td>
+<p>Item ID</p>
+</td>
+<td>
+<p>Item Type</p>
+</td>
+<td>
+<p>Item Category</p>
+</td>
+<td>
+<p>Item Subcategory</p>
+</td>
+<td>
+<p>Item Name</p>
+</td>
+<td>
+<p>QTY Purchased</p>
+</td>
+<td>
+<p>Unit Cost</p>
+</td>
+<td>
+<p>Cost Excl Tax</p>
+</td>
+<td>
+<p>Tax Rate</p>
+</td>
+<td>
+<p>Total Tax</p>
+</td>
+<td>
+<p>Cost Incl Tax</p>
+</td>
+<td>
+<p>Shipping Fees</p>
+</td>
+<td>
+<p>Total Purchase Price</p>
+</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Create following columns. Auto fit column widths and create a horizontal scroll / frame for overflow. Keep the table header fixed.<br /> </li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>When user clicks {addrow}
+<ul>
+<li>Get [PO Date] from SECTION 1 and automatically populate in that row in [Date] column. [Read-Only]</li>
+<li>Get [PO ID] from SECTION 1 and automatically populate in that row in [PO ID] column. [Read-Only]</li>
+<li>Generate a unique random [Detail ID] for example &ldquo;D56179&rdquo; and populate in that row in [Detail ID] column. [Read Only]</li>
+<li>Get [Supplier ID] from SECTION 1 and automatically populate in that row in [Supplier ID] column. [Read Only]</li>
+<li>Get [Supplier Name] from SECTION 1 and automatically populate in that row in [Supplier Name] column. [Read Only]</li>
+<li>Get [State] from SECTION 1 and automatically populate in that row in [State] column. [Read Only]</li>
+<li>Get [City] from SECTION 1 and automatically populate in that row in [City] column. [Read Only]</li>
+<li>Get [Bill Num] from SECTION 1 and automatically populate in that row in [Bill Num] column. [Read Only]</li>
+<li>[Item Name] = HTML Searchable Drop-Down using select2, chosen or other libraries &ndash; Required
+<ul>
+<li>Go to google sheet &ldquo;InventoryItems&rdquo; &gt; named range &ldquo;RANGEINVENTORYITEMS&rdquo; &gt; column name &ldquo;Item Name&rdquo;</li>
+<li>Populate all values from this column in this drop-down excluding column name on row 1.</li>
+<li>!!!Important!!! Only populate the rows containing data. Ignore blank/empty rows.</li>
+</ul>
+</li>
+<li><strong>[Item ID] =</strong> Read Only. Auto Fetch based on [Item Name]
+<ul>
+<li>Get the [Item Name] selected by user from the [Item Name] drop-down</li>
+<li>Based on the selected [Item Name], get the value of [Item ID] from the same row of google sheet &ldquo;InventoryItems&rdquo; &gt; named range &ldquo;RANGEINVENTORYITEMS&rdquo; &gt; column name &ldquo;Item ID&rdquo;</li>
+<li>And populate in <strong>[Item ID]</strong> field</li>
+</ul>
+</li>
+<li><strong>[Item Type] =</strong> Read Only. Auto Fetch based on [Item ID]
+<ul>
+<li>Get the [Item ID] populated in [Item ID] field.</li>
+<li>Based on the [Item ID], get the value of [Item Type] from the same row of google sheet &ldquo;InventoryItems&rdquo; &gt; named range &ldquo;RANGEINVENTORYITEMS&rdquo; &gt; column name &ldquo;Item Type&rdquo;</li>
+<li>And populate in <strong>[Item Type]</strong> field</li>
+</ul>
+</li>
+<li><strong>[Item Category] =</strong> Read Only. Auto Fetch based on [Item ID]
+<ul>
+<li>Get the [Item ID] populated in [Item ID] field.</li>
+<li>Based on the [Item ID], get the value of [Item Category] from the same row of google sheet &ldquo;InventoryItems&rdquo; &gt; named range &ldquo;RANGEINVENTORYITEMS&rdquo; &gt; column name &ldquo;Item Category&rdquo;</li>
+<li>And populate in <strong>[Item Category]</strong> field</li>
+</ul>
+</li>
+<li><strong>[Item Subcategory] =</strong> Read Only. Auto Fetch based on [Item ID]
+<ul>
+<li>Get the [Item ID] populated in [Item ID] field.</li>
+<li>Based on the [Item ID], get the value of [Item Subcategory] from the same row of google sheet &ldquo;InventoryItems&rdquo; &gt; named range &ldquo;RANGEINVENTORYITEMS&rdquo; &gt; column name &ldquo;Item Subcategory&rdquo;</li>
+<li>And populate in <strong>[Item Subcategory]</strong> field</li>
+</ul>
+</li>
+<li><strong>[QTY Purchased] =</strong> Number only. 0 decimal place. Required</li>
+<li><strong>[Unit Cost] =</strong> Number only. 2 decimal place. Required</li>
+<li><strong>[Cost Excl Tax] =</strong> Auto calculate. Read only. <strong>[QTY Purchased] multiply by [Unit Cost]</strong></li>
+<li><strong>[Tax Rate] =</strong> Percentage (Decimal). 2 decimal place. Required. User should enter the value with percentage sign. i.e., 15.25% for 0.1525</li>
+<li><strong>[Total Tax] =</strong> Auto calculate. Read only. <strong>[Cost Excl Tax] multiply by [Tax Rate]</strong></li>
+<li><strong>[Cost Incl Tax] =</strong> Auto calculate. Read only. <strong>[Cost Excl Tax] Plus [Total Tax]</strong></li>
+<li><strong>[Shipping Fees] =</strong> Auto calculate. Read only. <strong>[Cost Incl Tax] Multiply by 1%</strong></li>
+<li><strong>[Total Purchase Price] =</strong> Auto calculate. Read only. <strong>[Cost Incl Tax] Plus [Shipping Fees]</strong></li>
+</ul>
+</li>
+<li>Also provide 2 buttons aligned bottom right on this form
+<ul>
+<li>{Save} button, and {Close} button</li>
+</ul>
+</li>
+<li>If user clicks {Close} button, exit the form</li>
+<li>If user clicks {Save} button;
+<ul>
+<li>Validate the form.</li>
+<li>Then go to google sheet &ldquo;PurchaseDetails&rdquo; &gt; named range &ldquo;RANGEPD&rdquo; and save all the rows from the SECTION 2 on next available empty row in the same column names in the named range &ldquo;RANGEPD&rdquo;. Here are the column names again.</li>
+</ul>
+</li>
+</ul>
+<table width="730">
+<tbody>
+<tr>
+<td>
+<p>Date</p>
+</td>
+<td>
+<p>PO ID</p>
+</td>
+<td>
+<p>Detail ID</p>
+</td>
+<td>
+<p>Supplier ID</p>
+</td>
+<td>
+<p>Supplier Name</p>
+</td>
+<td>
+<p>State</p>
+</td>
+<td>
+<p>City</p>
+</td>
+<td>
+<p>Bill Num</p>
+</td>
+<td>
+<p>Item ID</p>
+</td>
+<td>
+<p>Item Type</p>
+</td>
+<td>
+<p>Item Category</p>
+</td>
+<td>
+<p>Item Subcategory</p>
+</td>
+<td>
+<p>Item Name</p>
+</td>
+<td>
+<p>QTY Purchased</p>
+</td>
+<td>
+<p>Unit Cost</p>
+</td>
+<td>
+<p>Cost Excl Tax</p>
+</td>
+<td>
+<p>Tax Rate</p>
+</td>
+<td>
+<p>Total Tax</p>
+</td>
+<td>
+<p>Cost Incl Tax</p>
+</td>
+<td>
+<p>Shipping Fees</p>
+</td>
+<td>
+<p>Total Purchase Price</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<p><strong>&nbsp;</strong></p>
+<p><strong>!!!IMPORTANT!!!<br /> <br /> </strong></p>
+<ul>
+<li>[Date], [PO ID], [Supplier ID], [Supplier Name], [Bill Num] must be same in all rows</li>
+<li>If user change the [Date], [PO ID], [Supplier ID], [Supplier Name], [Bill Num] from SECTION 1, automatically change them in SECTION 2 in all rows of PO ITEMS form.</li>
+<li>After saving the data, call the following functions in this exact sequence;
+<ul>
+<li>updatetotalpo</li>
+<li>updatepobalance</li>
+<li>updateqtypurchased</li>
+<li>updateremainingqty</li>
+<li>updatereorderrequired</li>
+<li>updatetotalpurchases</li>
+<li>updatebalancepayable</li>
+</ul>
+</li>
+<li>Show html alert success message &ldquo;New PO Created&rdquo;</li>
+<li>And refresh {polist} HTML table to display updated records.</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>&nbsp;</p>
+<ol start="4">
+<li><strong>{polist} HTML table</strong></li>
+</ol>
+<p>After &ldquo;Navigation buttons and search bar container&rdquo;, create a new container.</p>
+<ul>
+<li>Go to google sheet &ldquo;PurchaseOrders&rdquo; &gt; named range &ldquo;RANGEPO&rdquo;</li>
+<li>And render all the column names and the data rows from that sheet/named range as an HTML table</li>
+<li>Note: Column names are already provided in the start.</li>
+<li>Important: Only display the data rows containing data. Ignore blank/empty rows.</li>
+</ul>
+<p>Note: Instructions for {Action Buttons} are provided later in this prompt.</p>
+<p><strong>&nbsp;</strong></p>
+<p><strong>!!!IMPORTANT!!! </strong>when rendering {polist} html table please remember that the column name &ldquo;Date&rdquo; in the named range &ldquo;RANGEPO&rdquo; contains date objects formatted as 12/31/2025. So please use an appropriate logic on client side to render the dates.</p>
+<p><strong>&nbsp;</strong></p>
+<ol start="5">
+<li><strong>{View} action button in {polist} HTML table</strong></li>
+</ol>
+<p><strong>&nbsp;</strong></p>
+<ul>
+<li><strong>{View} action button in {polist} HTML table</strong></li>
+<li>With each data row on {polist} HTML table, provide a {View} action button.</li>
+<li>When user clicks <strong>{View} </strong>button on any data row on {polist} HTML table
+<ul>
+<li>Open an html popup <strong>{podetails}</strong> covering the entire page.</li>
+<li>Get the &ldquo;PO ID&rdquo; from that row on {polist} HTML table</li>
+<li>Go to google sheet &ldquo;PurchaseDetails&rdquo; &gt; named range &ldquo;RANGEPD&rdquo; &gt; column name &ldquo;PO ID&rdquo;</li>
+<li>Match &ldquo;PO ID&rdquo; from {polist} HTML table with &ldquo;PO ID&rdquo; in &ldquo;PO ID&rdquo; column of named range &ldquo;RANGEPD&rdquo;</li>
+<li>For all matching &ldquo;PO ID&rdquo;, filter and fetch all the data rows (with column names) from google sheet &ldquo;PurchaseDetails&rdquo; named range &ldquo;RANGEPD&rdquo;</li>
+<li>And display in popup form.</li>
+<li>Auto fit column widths and create scroll for overflow.</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<ol start="6">
+<li><strong>{Edit} {Update} {Delete} and {Cancel} </strong>functionality in {podetails} html popup<br /> </li>
+</ol>
+<ul>
+<li>Provide 3 action buttons aligned bottom right with {podetails} HTML popup form.
+<ul>
+<li>{Edit} button</li>
+<li>{Update} button</li>
+<li>{Cancel} button<strong><br /> <br /> </strong></li>
+</ul>
+</li>
+<li><strong>{Edit} {Update} and {Cancel} functionality on {podetails} popup.</strong></li>
+<li>When user clicks <strong>{Edit} </strong>button;
+<ul>
+<li>Turn all data rows related to that [PO ID} into editable mode on front end HTML table.</li>
+<li>Only turn the following columns into editable mode;
+<ul>
+<li>&ldquo;Item Name&rdquo;</li>
+<li>&ldquo;QTY Purchased&rdquo;</li>
+<li>&ldquo;Unit Cost&rdquo;</li>
+<li>&ldquo;Tax Rate&rdquo;</li>
+</ul>
+</li>
+<li>For &ldquo;Item Name&rdquo;, make sure to use drop-down in edit mode as we have already built this while dealing with {New PO} button</li>
+</ul>
+</li>
+<li>IMPORTANT!!! In the &ldquo;Edit&rdquo; mode when user changes &ldquo;Item Name&rdquo;, automatically change the corresponding &ldquo;Item ID&rdquo;, &ldquo;Item Type&rdquo;, &ldquo;Item Category&rdquo; and &ldquo;Item Subcategory&rdquo;. Recall from {New PO} button instructions that we already built this logic<strong>.</strong>
+<ul>
+<li>After making the changes, when user clicks {Update} button;
+<ul>
+<li>Validate all the data rows for that [PO ID]</li>
+<li>And save the updated data back into the same row on Google sheet &ldquo;PurchaseDetails&rdquo; named range &ldquo;RANGEPD&rdquo;</li>
+<li>Note: Column names on {podetails} popup are same as the column names on &ldquo;RANGEPD&rdquo;</li>
+<li>You might want to create a row recognition number function for this.</li>
+</ul>
+</li>
+<li>After updating the data, call the following functions in this exact sequence;
+<ul>
+<li>revisetotalpo</li>
+<li>updatepobalance</li>
+<li>updateqtypurchased</li>
+<li>updateremainingqty</li>
+<li>updatereorderrequired</li>
+<li>updatetotalpurchases</li>
+<li>updatebalancepayable<br /> </li>
+</ul>
+</li>
+<li>Show html alert success message &ldquo;PO Details Updated&rdquo;</li>
+<li>And refresh {polist} HTML table to display updated records.</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+</li>
+</ul>
+<p>Important!: {Update} and {Cancel} buttons should only be active after user has clicked the {Edit} button.</p>
+<p>IF user clicks {Edit} and then click {Cancel} then don&rsquo;t update the data and revert back the row into view mode.</p>
+<ul>
+<li><strong>{Delete} functionality on {podetails} popup.</strong></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>With each row on {podetails} popup HTML table, provide a {Delete} icon / button</li>
+<li>When user clicks <strong>{Delete} </strong>button on any data row inside {podetails} html popup form
+<ul>
+<li>Show delete confirmation popup with two buttons
+<ul>
+<li>{Confirm} and {Cancel}</li>
+</ul>
+</li>
+<li>If user clicks {Cancel}, exit the confirmation popup</li>
+<li>If user clicks {Confirm} on any row
+<ul>
+<li>Then get the &ldquo;Detail ID&rdquo; of that row</li>
+<li>And delete the same row from google sheet &ldquo;PurchaseDetails&rdquo; named range &ldquo;RANGEPD&rdquo;</li>
+</ul>
+</li>
+<li>After deleting the row, call the following functions in this exact sequence;
+<ul>
+<li>revisetotalpo</li>
+<li>updatepobalance</li>
+<li>updateqtypurchased</li>
+<li>updateremainingqty</li>
+<li>updatereorderrequired</li>
+<li>updatetotalpurchases</li>
+<li>updatebalancepayable<br /> </li>
+</ul>
+</li>
+<li>Show html alert success message &ldquo;PO Item Deleted&rdquo;</li>
+<li>And refresh {polist} HTML table to display updated records.</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<ol start="7">
+<li><strong>Search Functionality in {polist} HTML table</strong></li>
+</ol>
+<ul>
+<li>Refer to the initial instructions provided in &ldquo;Navigation buttons and search bar container&rdquo; section.</li>
+<li>In the drop-down, populate the following options (Search Criteria);
+<ul>
+<li>&ldquo;All&rdquo;</li>
+<li>&ldquo;PO ID&rdquo;</li>
+<li>&ldquo;Supplier Name&rdquo;</li>
+<li>&ldquo;Bill Num&rdquo;</li>
+<li>&ldquo;PMT Status&rdquo;</li>
+<li>&ldquo;Shipping Status&rdquo;</li>
+</ul>
+</li>
+<li>If user selects &ldquo;PO ID&rdquo; as search criteria, input search query in search box and click {Search} button
+<ul>
+<li>Match the search query in &ldquo;PO ID&rdquo; column of {polist} HTML table and filter the records (Partial Match)</li>
+<li>If no data is found, display HTML alert message &ldquo;No matching data found&rdquo;<br /> </li>
+</ul>
+</li>
+<li>Similarly, build search functionality for other remaining criteria i.e.,
+<ul>
+<li>Drop-down = &ldquo;Supplier Name&rdquo; = Search and filter in &ldquo;Supplier Name&rdquo; column of {polist} HTML table</li>
+<li>Drop-down = &ldquo;Bill Num&rdquo; = Search and filter in &ldquo;Bill Num&rdquo; column of {polist} HTML table</li>
+<li>Drop-down = &ldquo;PMT Status&rdquo; = Search and filter in &ldquo;PMT Status&rdquo; column of {polist} HTML table</li>
+<li>Drop-down = &ldquo;Shipping Status&rdquo; = Search and filter in &ldquo;Shipping Status&rdquo; column of {polist} HTML table<br /> </li>
+</ul>
+</li>
+<li>If user clicks {Clear} button
+<ul>
+<li>Remove search query from search box</li>
+<li>Reset the {polist} HTML table and display all records</li>
+</ul>
+</li>
+<li>By default, set the {polist} HTML table to display all records and keep the drop-down option = &ldquo;All&rdquo;</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Search} and {Clear} button is clicked.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p><strong>&nbsp;</strong></p>
+<ol start="8">
+<li><strong>FUNCTIONS</strong></li>
+</ol>
+<p><strong>&nbsp;</strong></p>
+<p><strong>(i)&ldquo;updateqtypurchased&rdquo;</strong></p>
+<ul>
+<li>Go to google sheet &ldquo;Inventory Items&rdquo; &gt; named range &ldquo;RANGEINVENTORYITEMS&rdquo; &gt; Column name &ldquo;Item ID&rdquo;</li>
+<li>For each &ldquo;Item ID&rdquo; create a sumif like formula;
+<ul>
+<li>Match each &ldquo;Item ID&rdquo; with entries in &ldquo;Item ID&rdquo; column of named range &ldquo;RANGEPD&rdquo;</li>
+<li>And sum the quantities from &ldquo;QTY Purchased&rdquo; column of named range &ldquo;RANGEPD&rdquo;</li>
+<li>Then save the result in &ldquo;QTY Purchased&rdquo; column in the respective row of named range &ldquo;RANGEINVENTORYITEMS&rdquo;</li>
+</ul>
+</li>
+<li>Loop this function for all rows containing data in &ldquo;Item ID&rdquo; column of named range &ldquo;RANGEINVENTORYITEMS&rdquo;</li>
+</ul>
+<p><strong>&nbsp;</strong></p>
+<p><strong>(ii)&ldquo;updateremainingqty&rdquo;</strong></p>
+<ul>
+<li>For each &ldquo;Item ID&rdquo; in &ldquo;Item ID&rdquo; column of named range &ldquo;RANGEINVENTORYITEMS&rdquo;
+<ul>
+<li>&ldquo;QTY Purchased&rdquo; column minus &ldquo;QTY Sold&rdquo; column</li>
+<li>And save the result in &ldquo;Remaining QTY&rdquo; column of named range &ldquo;RANGEINVENTORYITEMS&rdquo;</li>
+</ul>
+</li>
+<li>Loop this function for all rows containing data in &ldquo;Item ID&rdquo; column of named range &ldquo;RANGEINVENTORYITEMS&rdquo;</li>
+</ul>
+<p><strong>&nbsp;</strong></p>
+<p><strong>(iii)&ldquo;updatereorderrequired&rdquo;</strong></p>
+<ul>
+<li>For each &ldquo;Item ID&rdquo; in &ldquo;Item ID&rdquo; column of named range &ldquo;RANGEINVENTORYITEMS&rdquo;
+<ul>
+<li>IF the value in &ldquo;Remaining QTY&rdquo; column is less than the value in &ldquo;Reorder Level&rdquo; column;
+<ul>
+<li>Then write &ldquo;Yes&rdquo; in &ldquo;Reorder Required&rdquo; column</li>
+<li>Otherwise write &ldquo;No&rdquo;</li>
+</ul>
+</li>
+<li>Loop this function for all rows containing data in &ldquo;Item ID&rdquo; column of named range &ldquo;RANGEINVENTORYITEMS&rdquo;</li>
+</ul>
+</li>
+</ul>
+<p><strong>&nbsp;</strong></p>
+<p><strong>&nbsp;</strong></p>
+<p><strong>(iv)&ldquo;updatetotalpurchases&rdquo;</strong></p>
+<ul>
+<li>Go to google sheet &ldquo;Suppliers&rdquo; &gt; named range &ldquo;RANGESUPPLIERS&rdquo; &gt; Column name &ldquo;Supplier ID&rdquo;</li>
+<li>For each &ldquo;Supplier ID&rdquo; create a sumif like formula;
+<ul>
+<li>Match each &ldquo;Supplier ID&rdquo; with entries in &ldquo;Supplier ID&rdquo; column of named range &ldquo;RANGEPD&rdquo;</li>
+<li>And sum the amounts from &ldquo;Total Purchase Price&rdquo; column of named range &ldquo;RANGEPD&rdquo;</li>
+<li>Then save the result in &ldquo;Total Purchases&rdquo; column in the respective row of named range &ldquo;RANGESUPPLIERS&rdquo;</li>
+</ul>
+</li>
+<li>Loop this function for all rows containing data in &ldquo;Supplier ID&rdquo; column of named range &ldquo;RANGESUPPLIERS&rdquo;</li>
+</ul>
+<p><strong>&nbsp;</strong></p>
+<p><strong>(v)&ldquo;updatebalancepayable&rdquo;</strong></p>
+<ul>
+<li>For each &ldquo;Supplier ID&rdquo; in &ldquo;Supplier ID&rdquo; column of named range &ldquo;RANGESUPPLIERS&rdquo;
+<ul>
+<li>&ldquo;Total Purchases&rdquo; column minus &ldquo;Total Payments&rdquo; column</li>
+<li>And save the result in &ldquo;Balance Payable&rdquo; column of named range &ldquo;RANGESUPPLIERS&rdquo;</li>
+</ul>
+</li>
+<li>Loop this function for all rows containing data &ldquo;Supplier ID&rdquo; column of named range &ldquo;RANGESUPPLIERS&rdquo;</li>
+</ul>
+<p><strong>&nbsp;</strong></p>
+<p><strong>&nbsp;</strong></p>
+<p><strong>(v)&ldquo;updatetotalpo&rdquo;</strong></p>
+<ul>
+<li>Go to google sheet &ldquo;PurchaseDetails&rdquo; named range &ldquo;RANGEPD&rdquo; column name &ldquo;PO ID&rdquo;</li>
+<li>Get all unique &ldquo;PO ID&rdquo; from this column</li>
+<li>Based on unique &ldquo;PO ID&rdquo; sum the &ldquo;Total Purchase Price&rdquo; column like sumif formula.</li>
+<li>Then save the result as follows;
+<ul>
+<li>Sum the result of SUM in &ldquo;Total Amount&rdquo; column of google sheet &ldquo;PurchaseOrders&rdquo; named range &ldquo;RANGEPO&rdquo;</li>
+<li>Based on the &ldquo;PO ID&rdquo; , get the values from the following columns of named range &ldquo;RANGEPD&rdquo;
+<ul>
+<li>&ldquo;Date&rdquo;, &ldquo;Supplier ID&rdquo;, &ldquo;Supplier Name&rdquo;, &ldquo;Bill Num&rdquo;, &ldquo;State&rdquo;, &ldquo;City&rdquo;</li>
+</ul>
+</li>
+<li>And save in the following columns of &ldquo;RANGEPO&rdquo; on the next available empty row
+<ul>
+<li>&ldquo;Date&rdquo;, &ldquo;Supplier ID&rdquo;, &ldquo;Supplier Name&rdquo;, &ldquo;Bill Num&rdquo;, &ldquo;State&rdquo;, &ldquo;City&rdquo;</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>Loop this function for all unique values in &ldquo;PO ID&rdquo; column of named range &ldquo;RANGEPD&rdquo;</li>
+</ul>
+<p><strong>&nbsp;</strong></p>
+<p>!!!IMPORTANT!!! This function saves the total value of multiple PO items as a single row on google sheet &ldquo;PurchaseOrders&rdquo; named range &ldquo;RANGEPO&rdquo;</p>
+<p>Recall from <strong>{New PO} button</strong> instructions that &ldquo;Date&rdquo;, &ldquo;Supplier ID&rdquo;, &ldquo;Supplier Name&rdquo;, &ldquo;Bill Num&rdquo;, &ldquo;State&rdquo;, &ldquo;City&rdquo; will always be same for each PO.</p>
+<p>&nbsp;</p>
+<p><strong>(vi)&ldquo;updatepobalance&rdquo;</strong></p>
+<ul>
+<li>For each &ldquo;PO ID&rdquo; in &ldquo;PO ID&rdquo; column of named range &ldquo;RANGEPO&rdquo;
+<ul>
+<li>&ldquo;Total Amount&rdquo; column minus &ldquo;Total Paid&rdquo; column</li>
+<li>And save the result in &ldquo;PO Balance&rdquo; column of named range &ldquo;RANGEPO&rdquo;</li>
+</ul>
+</li>
+<li>Loop this function for all rows containing data in &ldquo;PO ID&rdquo; column of named range &ldquo;RANGEPO&rdquo;</li>
+</ul>
+<p><strong>&nbsp;</strong></p>
+<p><strong>(vii)&ldquo;revisetotalpo&rdquo;</strong></p>
+<ul>
+<li>Go to google sheet &ldquo;PurchaseOrders&rdquo; named range &ldquo;RANGEPO&rdquo; column name &ldquo;PO ID&rdquo;</li>
+<li>Match all entries in this column with the entries in &ldquo;PO ID&rdquo; column of google sheet &ldquo;PurchaseDetails&rdquo; named range &ldquo;RANGEPD&rdquo;.</li>
+<li>And create a sumif like formula.</li>
+<li>For all matching &ldquo;PO ID&rdquo;, sum the amount from &ldquo;Total Purchase Price&rdquo; column of named range &ldquo;RANGEPD&rdquo; and save the result in column name &ldquo;Total Amount&rdquo; of named range &ldquo;RANGEPO&rdquo;</li>
+<li>Loop this function for all entries in &ldquo;PO ID&rdquo; column of named range &ldquo;RANGEPO&rdquo;</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><strong>(viii)&rdquo;revisetotalinventory&rdquo;</strong><br /> <br /> Go to google sheet &ldquo;InventoryItems&rdquo; named range &ldquo;RANGEINVENTORYITEMS&rdquo; column name &ldquo;Item ID&rdquo;</li>
+<li>Match all entries in this column with the entries in &ldquo;Item ID&rdquo; column of google sheet &ldquo;PurchaseDetails&rdquo; named range &ldquo;RANGEPD&rdquo;.</li>
+<li>And create a sumif like formula.</li>
+<li>For all matching &ldquo;Item ID&rdquo;, sum the amount from &ldquo;QTY Purchased&rdquo; column of named range &ldquo;RANGEPD&rdquo; and save the result in column name &ldquo;QTY Purchased&rdquo; of named range &ldquo;RANGEINVENTORYITEMS&rdquo;</li>
+<li>Loop this function for all entries in &ldquo;Item ID&rdquo; column of named range &ldquo;RANGEINVENTORYITEMS&rdquo;</li>
+</ul>
+<p>&nbsp;</p>
+<ol>
+<li><strong>OTHER INSTRUCTIONS.</strong></li>
+</ol>
+<ul>
+<li>Please write HTML, CSS, Javascript code in a single file &ldquo;purchases.html&rdquo;</li>
+<li>Write GS code in a single file &ldquo;gspurchases.gs&rdquo;</li>
+<li>Use unique names for HTML IDs, CSS classes, javascript functions and GS functions so that the function names do not conflict because there are multiple modules</li>
+<li>You can use the word &ldquo;po&rdquo; at the start of each javascript and GS functions as well as for HTML and CSS IDs, classes and elements to make it unique.</li>
+<li>Use font awesome and include appropriate icons where necessary i.e., with links, input fields and buttons.</li>
+<li>Use white, light black, light aqua, teal and grey color combination</li>
+<li>Use Poppins, Roboto and Montserrat google fonts.</li>
+</ul>
+<p>&nbsp;</p>
+<p>ACT AS A PROFESSIONAL GOOGLE SHEETS APPS SCRIPT DEVELOPER.<br /> THOROUGHLY ANALYZE THE INSTRUCTIONS AND PROVIDE COMPLETE AND WORKING HTML, CSS, JAVASCRIPT, AND .GS (GOOGLE APPS SCRIPT) CODE FOR THIS MODULE</p>
+<p>&nbsp;</p>
+<p>REMEMBER TO CONSULT GOOGLE SHEETS APPS SCRIPT DOCUMENTATION IF YOU ARE UNSURE ABOUT ANYTHING.<br /> <a href="https://developers.google.com/apps-script">https://developers.google.com/apps-script</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2><span style="color: #ff0000;"><strong>PROMPT 6</strong></span></h2>
+<h2><span style="color: #ff0000;"><strong>Instructions for Sales Module &ndash; sales.html and gssales.gs</strong></span></h2>
+<p>Here are the instructions for the Sales module [sales.html and gssales.gs]</p>
+<p>&nbsp;</p>
+<ol>
+<li><strong>Sheets and named ranges</strong></li>
+</ol>
+<ul>
+<li>We will use 3 google sheets and named ranges for this module;
+<ul>
+<li>Sheet name = &ldquo;SalesOrders&rdquo; named range = &ldquo;RANGESO&rdquo;</li>
+<li>Sheet name = &ldquo;SalesDetails&rdquo; named range = &ldquo;RANGESD&rdquo;</li>
+<li>Sheet name = &ldquo;Dimensions&rdquo; named range = &ldquo;RANGEDIMENSIONS&rdquo;</li>
+</ul>
+</li>
+<li>Column names on &ldquo;SalesOrders&rdquo; sheet &gt; named range &ldquo;RANGESO&rdquo; are as follows. Column names are on row # 1 and data starts from row # 2.</li>
+</ul>
+<table width="756">
+<tbody>
+<tr>
+<td width="48">
+<p>SO Date</p>
+</td>
+<td width="60">
+<p>SO ID</p>
+</td>
+<td width="72">
+<p>Customer ID</p>
+</td>
+<td width="72">
+<p>Customer Name</p>
+</td>
+<td width="60">
+<p>Invoice Num</p>
+</td>
+<td width="42">
+<p>State</p>
+</td>
+<td width="42">
+<p>City</p>
+</td>
+<td width="78">
+<p>Total SO Amount</p>
+</td>
+<td width="72">
+<p>Total Received</p>
+</td>
+<td width="54">
+<p>SO Balance</p>
+</td>
+<td width="66">
+<p>Receipt Status</p>
+</td>
+<td width="90">
+<p>Shipping Status</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&nbsp;</strong></p>
+<table width="786">
+<tbody>
+<tr>
+<td width="31">
+<p>SO Date</p>
+</td>
+<td>
+<p>SO ID</p>
+</td>
+<td>
+<p>Detail ID</p>
+</td>
+<td>
+<p>Customer ID</p>
+</td>
+<td>
+<p>Customer Name</p>
+</td>
+<td>
+<p>State</p>
+</td>
+<td>
+<p>City</p>
+</td>
+<td>
+<p>Invoice Num</p>
+</td>
+<td>
+<p>Item ID</p>
+</td>
+<td>
+<p>Item Type</p>
+</td>
+<td>
+<p>Item Category</p>
+</td>
+<td>
+<p>Item Subcategory</p>
+</td>
+<td>
+<p>Item Name</p>
+</td>
+<td>
+<p>QTY Sold</p>
+</td>
+<td>
+<p>Unit Price</p>
+</td>
+<td>
+<p>Price Excl Tax</p>
+</td>
+<td>
+<p>Tax Rate</p>
+</td>
+<td>
+<p>Total Tax</p>
+</td>
+<td>
+<p>Price Incl Tax</p>
+</td>
+<td>
+<p>Shipping Fees</p>
+</td>
+<td width="76">
+<p>Total Sales Price</p>
+</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Column names on &ldquo;SalesDetails&rdquo; sheet &gt; named range &ldquo;RANGESD&rdquo; are as follows. Column names are on row # 1 and data starts from row # 2.</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>Column names on &ldquo;Dimensions&rdquo; sheet &gt; named range &ldquo;RANGEDIMENSIONS&rdquo; are as follows. Column names are on row # 1 and data starts from row # 2.</li>
+</ul>
+<table width="0">
+<tbody>
+<tr>
+<td>
+<p>State</p>
+</td>
+<td>
+<p>City</p>
+</td>
+<td>
+<p>PMT Mode</p>
+</td>
+<td>
+<p>PMT Status</p>
+</td>
+<td>
+<p>Shipping Status</p>
+</td>
+<td>
+<p>Item Type</p>
+</td>
+<td>
+<p>Item Category</p>
+</td>
+<td>
+<p>Item Subcategory</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&nbsp;</strong></p>
+<ul>
+<li><strong>Important Note: </strong>
+<ul>
+<li>The column name &ldquo;Date&rdquo; on google sheet &ldquo;SalesOrders&rdquo; (named range = &ldquo;RANGESO&rdquo;) and google sheet &ldquo;SalesDetails&rdquo; (named range = &ldquo;RANGESD&rdquo;) is formatted as a date as follows &ldquo;MM/DD/YYYY&rdquo;</li>
+<li>So please use a proper date object utility for this column when rendering HTML tables from google sheets on front-end.<br /> </li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li><strong>FUNCTIONS</strong></li>
+</ol>
+<ul>
+<li><strong>&ldquo;generateSOID&rdquo;</strong></li>
+<li>Generate a unique random [SO ID] starting with letters &ldquo;SO&rdquo; followed by 5 random numbers. For example &ldquo;SO56978&rdquo;</li>
+<li>Then go to google sheet &ldquo;SalesDetails&rdquo; &gt; named range &ldquo;RANGESD&rdquo; &gt; column name &ldquo;SO ID&rdquo;</li>
+<li>IF the [SO ID] you generated already exist in this column then regenerate a new [SO ID] because I don&rsquo;t want duplicate values in this column.<br /> </li>
+<li><strong>&ldquo;generateSalesDetailID&rdquo;</strong></li>
+<li>Generate a unique random [Detail ID] starting with letters &ldquo;D&rdquo; followed by 5 random numbers. For example &ldquo;D56978&rdquo;</li>
+<li>Then go to google sheet &ldquo;SalesDetails&rdquo; &gt; named range &ldquo;RANGESD&rdquo; &gt; column name &ldquo;Detail ID&rdquo;</li>
+<li>IF the [Detail ID] you generated already exist in this column then regenerate a new [SO ID] because I don&rsquo;t want duplicate values in this column.</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><strong>&ldquo;updateQtySold&rdquo;</strong></li>
+<li>For each &ldquo;Item ID&rdquo; in &ldquo;Item ID&rdquo; column of google sheet &ldquo;Inventory Items&rdquo; &gt; named range &ldquo;RANGEINVENTORYITEMS&rdquo;
+<ul>
+<li>Create a sumif like formula</li>
+<li>Match each &ldquo;Item ID&rdquo; from &ldquo;Item ID&rdquo; column of named range &ldquo;RANGEINVNENTORYITEMS&rdquo; with the entries in &ldquo;Item ID&rdquo; column of named range &ldquo;RANGESD&rdquo;</li>
+<li>And sum the quantities from &ldquo;QTY Sold&rdquo; column of named range &ldquo;RANGESD&rdquo;</li>
+<li>Then save the result in &ldquo;QTY Sold&rdquo; column in the respective row of named range &ldquo;RANGEINVENTORYITEMS&rdquo;</li>
+</ul>
+</li>
+<li>Loop this function for all rows containing data in &ldquo;Item ID&rdquo; column of named range &ldquo;RANGEINVENTORYITEMS&rdquo;<br /> </li>
+<li><strong>&ldquo;calcRemainingQty&rdquo;</strong></li>
+<li>For each &ldquo;Item ID&rdquo; in &ldquo;Item ID&rdquo; column of named range &ldquo;RANGEINVENTORYITEMS&rdquo;
+<ol>
+<li>&ldquo;QTY Purchased&rdquo; column minus &ldquo;QTY Sold&rdquo; column</li>
+<li>And save the result in &ldquo;Remaining QTY&rdquo; column of named range &ldquo;RANGEINVENTORYITEMS&rdquo;</li>
+<li>Loop this function for all rows containing data in &ldquo;Item ID&rdquo; column of named range &ldquo;RANGEINVENTORYITEMS&rdquo;</li>
+</ol>
+</li>
+<li><strong>&ldquo;calcReorderRequired&rdquo;</strong></li>
+<li>For each &ldquo;Item ID&rdquo; in &ldquo;Item ID&rdquo; column of named range &ldquo;RANGEINVENTORYITEMS&rdquo;
+<ul>
+<li>IF the value in &ldquo;Remaining QTY&rdquo; column is less than the value in &ldquo;Reorder Level&rdquo; column;
+<ul>
+<li>Then write &ldquo;Yes&rdquo; in &ldquo;Reorder Required&rdquo; column</li>
+<li>Otherwise write &ldquo;No&rdquo;</li>
+</ul>
+</li>
+<li>Loop this function for all rows containing data in &ldquo;Item ID&rdquo; column of named range &ldquo;RANGEINVENTORYITEMS&rdquo;<br /> </li>
+<li><strong>&ldquo;calcTotalSales&rdquo;</strong></li>
+<li>For each &ldquo;Customer ID&rdquo; in &ldquo;Customer ID&rdquo; column of google sheet &ldquo;Customers&rdquo; &gt; named range &ldquo;RANGECUSTOMERS&rdquo;
+<ul>
+<li>Create a sumif like formula</li>
+<li>Match each &ldquo;Customer ID&rdquo; from &ldquo;Customer ID&rdquo; column of named range &ldquo;RANGECUSTOMERS&rdquo; with the entries in &ldquo;Customer ID&rdquo; column of named range &ldquo;RANGESD&rdquo;</li>
+<li>And sum the amounts from &ldquo;Total Sales Price&rdquo; column of named range &ldquo;RANGESD&rdquo;</li>
+<li>Then save the result in &ldquo;Total Sales&rdquo; column in the respective row of named range &ldquo;RANGECUSTOMERS&rdquo;</li>
+</ul>
+</li>
+<li>Loop this function for all rows containing data in &ldquo;Customer ID&rdquo; column of named range &ldquo;RANGECUSTOMERS&rdquo;<br /> </li>
+<li><strong>&ldquo;calcBalanceReceivable&rdquo;</strong></li>
+<li>For each &ldquo;Customer ID&rdquo; in &ldquo;Customer ID&rdquo; column of named range &ldquo;RANGECUSTOMERS&rdquo;
+<ul>
+<li>&ldquo;Total Sales&rdquo; column minus &ldquo;Total Receipts&rdquo; column</li>
+<li>And save the result in &ldquo;Balance Receivable&rdquo; column of named range &ldquo;RANGECUSTOMERS&rdquo;</li>
+</ul>
+</li>
+<li>Loop this function for all rows containing data &ldquo;Customer ID&rdquo; column of named range &ldquo;RANGECUSTOMERS&rdquo;</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><strong>&ldquo;calcTotalSOAmount&rdquo;</strong></li>
+<li>Important: This function totals the amount of multiple items in a Sales Order from &ldquo;SalesDetails&rdquo; sheet (named range = &ldquo;RANGESD&rdquo;) and save it as a single entry on &ldquo;SalesOrders&rdquo; sheet (named range = &ldquo;RANGESO&rdquo;)<br /> </li>
+<li>For each &ldquo;SO ID&rdquo; in &ldquo;SO ID&rdquo; column of google sheet &ldquo;SalesOrders&rdquo; &gt; named range &ldquo;RANGESO&rdquo;
+<ul>
+<li>Create a sumif like formula</li>
+<li>Match each &ldquo;SO ID&rdquo; from &ldquo;SO ID&rdquo; column of named range &ldquo;RANGESO&rdquo; with the entries in &ldquo;SO ID&rdquo; column of named range &ldquo;RANGESD&rdquo;</li>
+<li>And sum the amounts from &ldquo;Total Sales Price&rdquo; column of named range &ldquo;RANGESD&rdquo;</li>
+<li>Then save the result in &ldquo;Total SO Amount&rdquo; column in the respective row of named range &ldquo;RANGESO&rdquo;</li>
+</ul>
+</li>
+<li>Loop this function for all rows containing data in &ldquo;SO ID&rdquo; column of named range &ldquo;RANGESO&rdquo;</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><strong>&ldquo;calcSOBalance&rdquo;</strong></li>
+<li>For each &ldquo;SO ID&rdquo; in &ldquo;SO ID&rdquo; column of named range &ldquo;RANGESO&rdquo;
+<ul>
+<li>&ldquo;Total SO Amount&rdquo; column minus &ldquo;Total Received&rdquo; column</li>
+<li>And save the result in column name &ldquo;SO Balance&rdquo; of named range &ldquo;RANGESO&rdquo;</li>
+</ul>
+</li>
+<li>Loop this function for all rows containing data in &ldquo;SO ID&rdquo; column of named range &ldquo;RANGESO&rdquo;</li>
+</ul>
+<p>&nbsp;</p>
+<ol start="3">
+<li><strong>Main heading and subheading</strong></li>
+</ol>
+<ul>
+<li>Create a single row (separate container)</li>
+<li>Give main heading: &lsquo;Sales Orders&rsquo; (aligned left)</li>
+<li>And subheading: &lsquo;Add and manage your SOs&rsquo; (aligned left)<br /> </li>
+</ul>
+<ol start="4">
+<li><strong>Navigation buttons and search bar container</strong></li>
+</ol>
+<ul>
+<li>Create following button aligned left
+<ul>
+<li>{New SO}</li>
+</ul>
+</li>
+<li>Also create the following elements on the same row aligned right;
+<ul>
+<li>Drop-Down</li>
+<li>Search input box linked with drop-down</li>
+<li>{Search} button and {Clear} button</li>
+<li>Specific instructions are provided later in this prompt.</li>
+</ul>
+</li>
+</ul>
+<p><strong>&nbsp;</strong></p>
+<ul>
+<li><strong>{New SO} button</strong></li>
+</ul>
+<p>This part is tricky. Handle it carefully</p>
+<ul>
+<li>Open HTML popup form when <strong>{New SO} </strong>button is clicked</li>
+<li>This HTML form should cover 100% of the page.</li>
+<li>Provide following elements on the pop-up form
+<ul>
+<li>Title &ldquo;Create New SO&rdquo;</li>
+</ul>
+</li>
+</ul>
+<p><strong>SECTION 1</strong></p>
+<ul>
+<li><strong>[SO ID]</strong> = Read Only, Auto Generated
+<ul>
+<li>Provide a {Generate} button with [SO ID] field.</li>
+<li>When {Generate} button is clicked;
+<ul>
+<li>Call &ldquo;generateSOID&rdquo; function and populate the result in this field.</li>
+</ul>
+</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Generate} button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.<br /> </li>
+</ul>
+</li>
+<li><strong>[Customer Name] = </strong>HTML Searchable Drop-Down using select2, chosen or other libraries &ndash; Required
+<ul>
+<li>Go to google sheet &ldquo;Customers&rdquo; &gt; named range &ldquo;RANGECUSTOMERS&rdquo; &gt; column name &ldquo;Customer Name&rdquo;</li>
+<li>Populate all values from this column in this drop-down excluding column name on row 1.</li>
+<li>!!!Important!!! Only populate the rows containing data. Ignore blank/empty rows.</li>
+</ul>
+</li>
+</ul>
+<p>You can use libraries like select2, chosen, or jquery UI to implement search functionality within the drop-down search box as appropriate.</p>
+<ul>
+<li><strong>[Customer ID] =</strong> Read Only. Auto Fetch based on [Customer Name]
+<ul>
+<li>Get the [Customer Name] selected by user from the drop-down.</li>
+<li>Based on the [Customer Name], get the value of [Customer ID] from the same row of google sheet &ldquo;Customers&rdquo; &gt; named range &ldquo;RANGECUSTOMERS&rdquo; &gt; column name &ldquo;Customer ID&rdquo;</li>
+<li>And populate in <strong>[Customer ID]</strong> field<br /> </li>
+</ul>
+</li>
+<li><strong>[State] =</strong> Read Only. Auto Fetch based on [Customer ID]
+<ul>
+<li>Get the [Customer ID] populated in the [Customer ID] field.</li>
+<li>Based on the [Customer ID], get the value of [State] from the same row of google sheet &ldquo;Customers&rdquo; &gt; named range &ldquo;RANGECUSTOMERS&rdquo; &gt; column name &ldquo;State&rdquo;</li>
+<li>And populate in <strong>[State]</strong> field<br /> </li>
+</ul>
+</li>
+<li><strong>[City] =</strong> Read Only. Auto Fetch based on [Supplier ID]
+<ul>
+<li>Get the [Customer ID] populated in the [Customer ID] field.</li>
+<li>Based on the [Customer ID], get the value of [City] from the same row of google sheet &ldquo;Customers&rdquo; &gt; named range &ldquo;RANGECUSTOMERS&rdquo; &gt; column name &ldquo;City&rdquo;</li>
+<li>And populate in <strong>[City]</strong> field<br /> </li>
+</ul>
+</li>
+<li><strong>[Invoice Num] </strong>= Text box input &ndash; required <br /> </li>
+<li><strong>[SO Date] </strong>= Date Picker - required</li>
+</ul>
+<p><strong>&nbsp;</strong></p>
+<p><strong>SECTION 2 [FUNCTIONALITY TO ADD MULTIPLE ITEMS TO SO]</strong></p>
+<ul>
+<li>Now you need to create a table with columns where user can add multiple rows by clicking {addrow} link / button / icon</li>
+<li>Also provide {removerow} link / button / icon which will remove the row.</li>
+</ul>
+<p>Create following columns. Auto fit column widths and create a horizontal scroll / frame for overflow. Keep the table header fixed.</p>
+<table width="786">
+<tbody>
+<tr>
+<td width="31">
+<p>SO Date</p>
+</td>
+<td>
+<p>SO ID</p>
+</td>
+<td>
+<p>Detail ID</p>
+</td>
+<td>
+<p>Customer ID</p>
+</td>
+<td>
+<p>Customer Name</p>
+</td>
+<td>
+<p>State</p>
+</td>
+<td>
+<p>City</p>
+</td>
+<td>
+<p>Invoice Num</p>
+</td>
+<td>
+<p>Item ID</p>
+</td>
+<td>
+<p>Item Type</p>
+</td>
+<td>
+<p>Item Category</p>
+</td>
+<td>
+<p>Item Subcategory</p>
+</td>
+<td>
+<p>Item Name</p>
+</td>
+<td>
+<p>QTY Sold</p>
+</td>
+<td>
+<p>Unit Price</p>
+</td>
+<td>
+<p>Price Excl Tax</p>
+</td>
+<td>
+<p>Tax Rate</p>
+</td>
+<td>
+<p>Total Tax</p>
+</td>
+<td>
+<p>Price Incl Tax</p>
+</td>
+<td>
+<p>Shipping Fees</p>
+</td>
+<td width="76">
+<p>Total Sales Price</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<ul>
+<li>When user clicks {addrow}
+<ul>
+<li>Get [SO Date] from SECTION 1 and automatically populate in that row in [Date] column. [Read-Only]</li>
+<li>Get [SO ID] from SECTION 1 and automatically populate in that row in [SO ID] column. [Read-Only]</li>
+<li>Call &ldquo;generateSalesDetailID&rdquo; function, and populate the result in that row in [Detail ID] column. [Read Only].</li>
+<li>Get [Customer ID] from SECTION 1 and automatically populate in that row in [Customer ID] column. [Read Only]</li>
+<li>Get [Customer Name] from SECTION 1 and automatically populate in that row in [Customer Name] column. [Read Only]</li>
+<li>Get [State] from SECTION 1 and automatically populate in that row in [State] column. [Read Only]</li>
+<li>Get [City] from SECTION 1 and automatically populate in that row in [City] column. [Read Only]</li>
+<li>Get [Invoice Num] from SECTION 1 and automatically populate in that row in [Invoice Num] column. [Read Only]</li>
+<li>[Item Name] = HTML Searchable Drop-Down using select2, chosen or other libraries &ndash; Required
+<ul>
+<li>Go to google sheet &ldquo;InventoryItems&rdquo; &gt; named range &ldquo;RANGEINVENTORYITEMS&rdquo; &gt; column name &ldquo;Item Name&rdquo;</li>
+<li>Populate all values from this column in this drop-down excluding column name on row 1.</li>
+<li>!!!Important!!! Only populate the rows containing data. Ignore blank/empty rows.</li>
+</ul>
+</li>
+<li><strong>[Item ID] =</strong> Read Only. Auto Fetch based on [Item Name]
+<ul>
+<li>Get the [Item Name] selected by user from the [Item Name] drop-down</li>
+<li>Based on the selected [Item Name], get the value of [Item ID] from the same row of google sheet &ldquo;InventoryItems&rdquo; &gt; named range &ldquo;RANGEINVENTORYITEMS&rdquo; &gt; column name &ldquo;Item ID&rdquo;</li>
+<li>And populate in <strong>[Item ID]</strong> field</li>
+</ul>
+</li>
+<li><strong>[Item Type] =</strong> Read Only. Auto Fetch based on [Item ID]
+<ul>
+<li>Get the [Item ID] populated in [Item ID] field.</li>
+<li>Based on the [Item ID], get the value of [Item Type] from the same row of google sheet &ldquo;InventoryItems&rdquo; &gt; named range &ldquo;RANGEINVENTORYITEMS&rdquo; &gt; column name &ldquo;Item Type&rdquo;</li>
+<li>And populate in <strong>[Item Type]</strong> field</li>
+</ul>
+</li>
+<li><strong>[Item Category] =</strong> Read Only. Auto Fetch based on [Item ID]
+<ul>
+<li>Get the [Item ID] populated in [Item ID] field.</li>
+<li>Based on the [Item ID], get the value of [Item Category] from the same row of google sheet &ldquo;InventoryItems&rdquo; &gt; named range &ldquo;RANGEINVENTORYITEMS&rdquo; &gt; column name &ldquo;Item Category&rdquo;</li>
+<li>And populate in <strong>[Item Category]</strong> field</li>
+</ul>
+</li>
+<li><strong>[Item Subcategory] =</strong> Read Only. Auto Fetch based on [Item ID]
+<ul>
+<li>Get the [Item ID] populated in [Item ID] field.</li>
+<li>Based on the [Item ID], get the value of [Item Subcategory] from the same row of google sheet &ldquo;InventoryItems&rdquo; &gt; named range &ldquo;RANGEINVENTORYITEMS&rdquo; &gt; column name &ldquo;Item Subcategory&rdquo;</li>
+<li>And populate in <strong>[Item Subcategory]</strong> field</li>
+</ul>
+</li>
+<li><strong>[QTY Sold] =</strong> Number only. 0 decimal place. Required</li>
+<li><strong>[Unit Price] =</strong> Number only. 2 decimal place. Required</li>
+<li><strong>[Price Excl Tax] =</strong> Auto calculate. Read only. <strong>[QTY Sold] multiply by [Unit Price]</strong></li>
+<li><strong>[Tax Rate] =</strong> Percentage (Decimal). 2 decimal place. Required
+<ul>
+<li>Important: User should enter value WITHOUT % sign. Divide the number with 100 to calculate fraction / percentage at the time of saving. If user enters % sign don&rsquo;t accept. Give error &ldquo;Enter without % sign&rdquo;</li>
+</ul>
+</li>
+<li><strong>[Total Tax] =</strong> Auto calculate. Read only. <strong>[Price Excl Tax] multiply by [Tax Rate/100]</strong></li>
+<li><strong>[Price Incl Tax] =</strong> Auto calculate. Read only. <strong>[Price Excl Tax] Plus [Total Tax]</strong></li>
+<li><strong>[Shipping Fees] =</strong> Number only. 2 decimal place. Required</li>
+<li><strong>[Total Sales Price] =</strong> Auto calculate. Read only. <strong>[Price Incl Tax] Plus [Shipping Fees]</strong></li>
+</ul>
+</li>
+<li><strong>IMPORTANT CHECKS</strong>
+<ul>
+<li>The following values must be same in all rows of SO lines;
+<ul>
+<li>[SO Date], [SO ID], [Customer ID], [Customer Name], [State], [City] [Invoice Num]</li>
+</ul>
+</li>
+<li>IF user changes [SO Date] OR [SO ID] OR [Customer ID] OR [Customer Name] OR [State] OR [City] OR [Invoice Num] from SECTION 1
+<ul>
+<li>Then automatically change that information in all rows of the Sales Order in SECTION 2.<br /> </li>
+</ul>
+</li>
+<li>Also provide 2 buttons aligned bottom right on this form in SECTION 2
+<ul>
+<li>{Save} button, and {Close} button</li>
+</ul>
+</li>
+<li>If user clicks {Close} button, exit the form</li>
+<li>If user clicks {Save} button then validate the form and save the data as follows;</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>Step 1</strong></p>
+<ul>
+<li>Saving data to &ldquo;SalesOrders&rdquo; sheet named range &ldquo;RANGESO&rdquo;
+<ul>
+<li>Get the value of [SO Date] and save on the next available empty row of google sheet &ldquo;SalesOrders&rdquo; named range &ldquo;RANGESO&rdquo; column name &ldquo;SO Date&rdquo;.</li>
+<li>Get the value of [SO ID] and save on the next available empty row of google sheet &ldquo;SalesOrders&rdquo; named range &ldquo;RANGESO&rdquo; column name &ldquo;SO ID&rdquo;.</li>
+<li>Get the value of [Customer ID] and save on the next available empty row of google sheet &ldquo;SalesOrders&rdquo; named range &ldquo;RANGESO&rdquo; column name &ldquo;Customer ID&rdquo;.</li>
+<li>Get the value of [Customer Name] and save on the next available empty row of google sheet &ldquo;SalesOrders&rdquo; named range &ldquo;RANGESO&rdquo; column name &ldquo;Customer Name&rdquo;.</li>
+<li>Get the value of [State] and save on the next available empty row of google sheet &ldquo;SalesOrders&rdquo; named range &ldquo;RANGESO&rdquo; column name &ldquo;State&rdquo;.</li>
+<li>Get the value of [City] and save on the next available empty row of google sheet &ldquo;SalesOrders&rdquo; named range &ldquo;RANGESO&rdquo; column name &ldquo;City&rdquo;.</li>
+<li>Get the value of [Invoice Num] and save on the next available empty row of google sheet &ldquo;SalesOrders&rdquo; named range &ldquo;RANGESO&rdquo; column name &ldquo;Invoice Num&rdquo;.</li>
+<li>!!!Important!!!: Recall from previous discussion that [SO Date], [SO ID], [Customer ID], [Customer Name], [State], [City] [Invoice Num] will be same for all rows of a Sales Order. So you can pick the details from any one row.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Step-2:</strong></p>
+<ul>
+<li><strong>Saving data to &ldquo;SalesDetails&rdquo; sheet named range &ldquo;RANGESD&rdquo;</strong></li>
+<li>After completing Step-1, go to google sheet &ldquo;SalesDetails&rdquo; &gt; named range &ldquo;RANGESD&rdquo;</li>
+<li>And save all the rows from the SECTION 2 on next available empty row in the same column names in the named range &ldquo;RANGESD&rdquo;. Here are the column names again.</li>
+</ul>
+<table width="786">
+<tbody>
+<tr>
+<td width="31">
+<p>Date</p>
+</td>
+<td>
+<p>SO ID</p>
+</td>
+<td>
+<p>Detail ID</p>
+</td>
+<td>
+<p>Customer ID</p>
+</td>
+<td>
+<p>Customer Name</p>
+</td>
+<td>
+<p>State</p>
+</td>
+<td>
+<p>City</p>
+</td>
+<td>
+<p>Invoice Num</p>
+</td>
+<td>
+<p>Item ID</p>
+</td>
+<td>
+<p>Item Type</p>
+</td>
+<td>
+<p>Item Category</p>
+</td>
+<td>
+<p>Item Subcategory</p>
+</td>
+<td>
+<p>Item Name</p>
+</td>
+<td>
+<p>QTY Sold</p>
+</td>
+<td>
+<p>Unit Price</p>
+</td>
+<td>
+<p>Price Excl Tax</p>
+</td>
+<td>
+<p>Tax Rate</p>
+</td>
+<td>
+<p>Total Tax</p>
+</td>
+<td>
+<p>Price Incl Tax</p>
+</td>
+<td>
+<p>Shipping Fees</p>
+</td>
+<td width="76">
+<p>Total Sales Price</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><strong>Step-3:</strong></p>
+<ul>
+<li><strong>Call functions in exact sequence</strong></li>
+<li>After completing Step-3, call the following functions in this EXACT SEQUENCE;
+<ul>
+<li>&ldquo;calcTotalSOAmount&rdquo;</li>
+<li>&ldquo;calcSOBalance&rdquo;</li>
+<li>&ldquo;updateQtySold&rdquo;</li>
+<li>&ldquo;calcRemainingQty&rdquo;</li>
+<li>&ldquo;calcReorderRequired&rdquo;</li>
+<li>&ldquo;calcTotalSales&rdquo;</li>
+<li>&ldquo;calcBalanceReceivable&rdquo;<br /> </li>
+</ul>
+</li>
+<li>Show html alert success message &ldquo;New SO Created&rdquo;</li>
+<li>And refresh {solist} HTML table to display updated records.</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Save} button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>&nbsp;</p>
+<ol start="5">
+<li><strong>{solist} HTML table</strong></li>
+</ol>
+<p>After &ldquo;Navigation buttons and search bar container&rdquo;, create a new container.</p>
+<ul>
+<li>Go to google sheet &ldquo;SalesOrders&rdquo; &gt; named range &ldquo;RANGESO&rdquo;</li>
+<li>And render all the column names and the data rows from that sheet/named range as an HTML table</li>
+<li>Note: Column names are already provided in the start.</li>
+<li>Important: Only display the data rows containing data. Ignore blank/empty rows.</li>
+</ul>
+<p><strong>!!!IMPORTANT!!! </strong>when rendering {solist} html table please remember that the column name &ldquo;Date&rdquo; in the named range &ldquo;RANGESO&rdquo; contains date object formatted as 12/31/2025. So please use an appropriate utility to render the date in front end {solist} HTML table.</p>
+<p><strong>&nbsp;</strong></p>
+<ol start="6">
+<li><strong>{View} action button in {solist} HTML popup table</strong></li>
+</ol>
+<p><strong>&nbsp;</strong></p>
+<ul>
+<li>With each data row in {solist} HTML table, provide a {View} action button.</li>
+<li>When user clicks <strong>{View} </strong>button on any data row inside {solist} HTML table
+<ul>
+<li>Open an html popup covering the entire page.</li>
+<li>Name this HTML popup as <strong>{sodetails} </strong></li>
+<li><strong>Important: </strong>Provide the same column names on this popup as the column names on &ldquo;SalesDetails&rdquo; sheet named range &ldquo;RANGESD&rdquo;</li>
+<li>Then get the &ldquo;SO ID&rdquo; from that row of {polist} HTML table</li>
+<li>And go to google sheet &ldquo;SalesDetails&rdquo; &gt; named range &ldquo;RANGESD&rdquo; &gt; column name &ldquo;PO ID&rdquo;</li>
+<li>Match &ldquo;PO ID&rdquo; from {solist} HTML table row with &ldquo;PO ID&rdquo; in &ldquo;PO ID&rdquo; column of named range &ldquo;RANGESD&rdquo;</li>
+<li>For all matching &ldquo;SO ID&rdquo; instances, filter and fetch all the data rows (with column names) from google sheet &ldquo;PurchaseDetails&rdquo; named range &ldquo;RANGEPD&rdquo;</li>
+<li>And display in this popup form.</li>
+<li>Auto fit column widths and create scroll for overflow.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Important Note: </strong>the {solist} html popup table essentially provides a break-down of the individual items attached to a particular sales order.</p>
+<ol start="7">
+<li><strong>{Edit} {Update} {Delete} and {Cancel} </strong>functionality in {sodetails} html popup table<br /> </li>
+</ol>
+<ul>
+<li>Provide 3 action buttons aligned bottom right on {sodetails} HTML popup form.
+<ul>
+<li>{Edit} button</li>
+<li>{Update} button</li>
+<li>{Cancel} button<br /> </li>
+</ul>
+</li>
+<li><strong>{Edit} {Update} and {Cancel} functionality on {sodetails} HTML popup table</strong></li>
+<li>When user clicks <strong>{Edit} </strong>button;</li>
+<li>Turn the following data rows related to that [SO ID} into editable mode on front end HTML table.
+<ul>
+<li>&ldquo;Item Name&rdquo;</li>
+<li>&ldquo;QTY Sold&rdquo;</li>
+<li>&ldquo;Unit Price&rdquo;</li>
+<li>&ldquo;Tax Rate&rdquo;</li>
+<li>&ldquo;Shipping Fees&rdquo;</li>
+<li>Important: For &ldquo;Item Name&rdquo;, make sure to use drop-down in edit mode as we have already built this while dealing with {New SO} button<br /> </li>
+</ul>
+</li>
+<li>IMPORTANT!!! In the &ldquo;Edit&rdquo; mode when user changes &ldquo;Item Name&rdquo;, automatically change the corresponding &ldquo;Item ID&rdquo;, &ldquo;Item Type&rdquo;, &ldquo;Item Category&rdquo; and &ldquo;Item Subcategory&rdquo;. Recall from {New PO} button instructions that we already built this logic<strong>.</strong>
+<ul>
+<li>After making the changes, when user clicks {Update} button;
+<ul>
+<li>Validate all the data rows for that [SO ID]</li>
+<li>And save the updated data back into the same rows on Google sheet &ldquo;SalesDetails&rdquo; named range &ldquo;RANGESD&rdquo;</li>
+<li>Note: Column names on {sodetails} popup are same as the column names on &ldquo;RANGEPD&rdquo;</li>
+<li>You might want to create a row recognition number function for this.</li>
+</ul>
+</li>
+<li>After updating the data, call the following functions in this exact sequence;
+<ul>
+<li>&ldquo;calcTotalSOAmount&rdquo;</li>
+<li>&ldquo;calcSOBalance&rdquo;</li>
+<li>&ldquo;updateQtySold&rdquo;</li>
+<li>&ldquo;calcRemainingQty&rdquo;</li>
+<li>&ldquo;calcReorderRequired&rdquo;</li>
+<li>&ldquo;calcTotalSales&rdquo;</li>
+<li>&ldquo;calcBalanceReceivable&rdquo;</li>
+</ul>
+</li>
+<li>Show html alert success message &ldquo;SO Details Updated&rdquo;</li>
+<li>And refresh {solist} HTML table to display updated records.</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+</li>
+</ul>
+<p>Important!: {Update} and {Cancel} buttons should only be active after user has clicked the {Edit} button.</p>
+<p>IF user clicks {Edit} and then click {Cancel} then don&rsquo;t update the data and revert back the row into view mode.</p>
+<p>&nbsp;</p>
+<ul>
+<li><strong>{Delete} functionality on {sodetails} popup HTML table</strong></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>With each row on {sodetails} popup HTML table, provide a {Delete} icon / button</li>
+<li>When user clicks <strong>{Delete} </strong>button on any data row inside {sodetails} html popup table
+<ul>
+<li>Show delete confirmation popup with two buttons
+<ul>
+<li>{Confirm} and {Cancel}</li>
+</ul>
+</li>
+<li>If user clicks {Cancel}, exit the confirmation popup</li>
+<li>If user clicks {Confirm} on any row
+<ul>
+<li>Then get the &ldquo;Detail ID&rdquo; of that row</li>
+<li>And delete the same row from google sheet &ldquo;SalesDetails&rdquo; named range &ldquo;RANGESD&rdquo;</li>
+</ul>
+</li>
+<li>After deleting the row, call the following functions in this exact sequence;
+<ul>
+<li>&ldquo;calcTotalSOAmount&rdquo;</li>
+<li>&ldquo;calcSOBalance&rdquo;</li>
+<li>&ldquo;updateQtySold&rdquo;</li>
+<li>&ldquo;calcRemainingQty&rdquo;</li>
+<li>&ldquo;calcReorderRequired&rdquo;</li>
+<li>&ldquo;calcTotalSales&rdquo;</li>
+<li>&ldquo;calcBalanceReceivable&rdquo;<br /> </li>
+</ul>
+</li>
+<li>Show html alert success message &ldquo;SO Item Deleted&rdquo;</li>
+<li>And refresh {solist} HTML table to display updated records.</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when &ldquo;Save&rdquo; button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<ol start="8">
+<li><strong>Search Functionality in {solist} HTML table</strong></li>
+</ol>
+<ul>
+<li>Refer to the initial instructions provided in &ldquo;Navigation buttons and search bar container&rdquo; section.</li>
+<li>In the drop-down, populate the following options (Search Criteria);
+<ul>
+<li>&ldquo;All&rdquo;</li>
+<li>&ldquo;SO ID&rdquo;</li>
+<li>&ldquo;Customer Name&rdquo;</li>
+<li>&ldquo;Invoice Num&rdquo;</li>
+<li>&ldquo;Receipt Status&rdquo;</li>
+<li>&ldquo;Shipping Status&rdquo;</li>
+</ul>
+</li>
+<li>If user selects &ldquo;SO ID&rdquo; as search criteria, input search query in search box and click {Search} button
+<ul>
+<li>Match the search query in &ldquo;SO ID&rdquo; column of {solist} HTML table and filter the records (Partial Match)</li>
+<li>If no data is found, display HTML alert message &ldquo;No matching data found&rdquo;<br /> </li>
+</ul>
+</li>
+<li>Similarly, build search functionality for other remaining criteria i.e.,
+<ul>
+<li>Drop-down = &ldquo;Customer Name&rdquo; = Search and filter in &ldquo;Customer Name&rdquo; column of {solist} HTML table</li>
+<li>Drop-down = &ldquo;Invoice Num&rdquo; = Search and filter in &ldquo;Invoice Num&rdquo; column of {solist} HTML table</li>
+<li>Drop-down = &ldquo;Receipt Status&rdquo; = Search and filter in &ldquo;Receipt Status&rdquo; column of {solist} HTML table</li>
+<li>Drop-down = &ldquo;Shipping Status&rdquo; = Search and filter in &ldquo;Shipping Status&rdquo; column of {solist} HTML table<br /> </li>
+</ul>
+</li>
+<li>If user clicks {Clear} button
+<ul>
+<li>Remove search query from search box</li>
+<li>Reset the {solist} HTML table and display all records</li>
+</ul>
+</li>
+<li>By default, set the {solist} HTML table to display all records and keep the drop-down option = &ldquo;All&rdquo;</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Search} and {Clear} button is clicked.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>TO-DO AND OTHER INSTRUCTIONS.</strong></p>
+<ul>
+<li>Please write HTML, CSS, Javascript code in a single file &ldquo;sales.html&rdquo;</li>
+<li>Write additional GS (if required) code in a single file &ldquo;gssales.gs&rdquo;</li>
+<li>Use unique names for HTML IDs, CSS classes, javascript functions and GS functions so that the function names do not conflict because there are multiple modules</li>
+<li>You can use the word &ldquo;so&rdquo; at the start of each javascript and GS functions as well as for HTML and CSS IDs, classes and elements to make it unique.</li>
+<li>Use font awesome and include appropriate icons where necessary i.e., with links, input fields and buttons.</li>
+<li>Use white, light black, light aqua, teal and grey color combination</li>
+<li>Use Poppins, Roboto and Montserrat google fonts.</li>
+</ul>
+<p>&nbsp;</p>
+<p>ACT AS A PROFESSIONAL GOOGLE SHEETS APPS SCRIPT DEVELOPER.<br /> THOROUGHLY ANALYZE THE INSTRUCTIONS AND PROVIDE COMPLETE AND WORKING HTML, CSS, JAVASCRIPT, AND .GS (GOOGLE APPS SCRIPT) CODE FOR THIS MODULE<br /> </p>
+<p>REMEMBER TO CONSULT GOOGLE SHEETS APPS SCRIPT DOCUMENTATION IF YOU ARE UNSURE ABOUT ANYTHING.<br /> <a href="https://developers.google.com/apps-script">https://developers.google.com/apps-script</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2><span style="color: #ff0000;"><strong>PROMPT 7</strong></span></h2>
+<h2><span style="color: #ff0000;"><strong>INSTRUCTIONS FOR RECEIPTS MODULE &ndash; receipts.html and gsreceipts.gs</strong></span></h2>
+<ul>
+<li>I am building an inventory management application using google sheets apps script.</li>
+<li>The script is tied to my google sheet.</li>
+<li>Navigation template is already built so don&rsquo;t use doget.</li>
+<li>Now I want to build a module called &ldquo;Receipts&rdquo;</li>
+<li>We will refer to multiple google sheets in this module.</li>
+<li>But the details of the main sheet that will be used is as follows</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>Sheet name &ldquo;Receipts&rdquo;</li>
+<li>Named Range &ldquo;RANGERECEIPTS&rdquo;</li>
+<li>The column names on google sheet &ldquo;Receipts&rdquo; named range &ldquo;RANGERECEIPTS&rdquo; are as follows;
+<ul>
+<li>Trx Date</li>
+<li>Trx ID</li>
+<li>Customer ID</li>
+<li>Customer Name</li>
+<li>State</li>
+<li>City</li>
+<li>SO ID</li>
+<li>Invoice Num</li>
+<li>PMT Mode</li>
+<li>Amount Received</li>
+</ul>
+</li>
+<li>Column names on google sheet &ldquo;Receipts&rdquo; named range &ldquo;RANGERECEIPTS&rdquo; are exactly in the sequence provided above</li>
+<li>Column names are on row 1 and data starts from row 2.</li>
+</ul>
+<p>Important: the column named &ldquo;Trx Date&rdquo; is formatted as a date on google sheet as follows &ldquo;MM/DD/YYYY&rdquo;. So please use an appropriate date object / utility to render the table on HTML page.</p>
+<p><strong>cashbank.html</strong></p>
+<ul>
+<li><strong>Heading and subheading</strong></li>
+<li>Create a heading (aligned left) = &ldquo;Cash and Bank Module&rdquo;</li>
+<li>Subheading (aligned left) = &ldquo;Create Receipts and Payments&rdquo;<br /> </li>
+<li><strong>Navigation links and search bar</strong></li>
+<li>After &ldquo;Heading and subheading&rdquo; create a separate container i.e., a single row.</li>
+<li>Provide following link aligned left with font awesome icon.
+<ul>
+<li>{New Receipt}</li>
+</ul>
+</li>
+<li>Also provide the following elements in the same row aligned right
+<ul>
+<li>A drop-down</li>
+<li>A search box linked with drop-down</li>
+<li>{Search} button</li>
+<li>{Clear} button</li>
+</ul>
+</li>
+<li>Specific instructions are provided later in this prompt<br /> </li>
+<li><strong>{New Receipt}</strong> button with plus icon aligned left.</li>
+</ul>
+<p>Open a 2 column HTML popup form when {New Receipt} button is clicked and provide following fields;</p>
+<p><strong>FORM FIELDS</strong></p>
+<ul>
+<li>[Trx Date] Required, date picker</li>
+<li>[Trx ID] required, read-only, drop-down
+<ul>
+<li>Provide a {Generate} button with this field</li>
+<li>When {Generate} button is clicked</li>
+<li>Generate a unique random [Trx ID] starting with letter &ldquo;RT&rdquo; followed by 5 random numbers. For example. &ldquo;RT45965&rdquo;</li>
+<li>After generating the [Trx ID] go to google sheet &ldquo;Receipts&rdquo; named range &ldquo;RANGERECEIPTS&rdquo; column name &ldquo;Trx ID&rdquo;</li>
+<li>Check in &ldquo;Trx ID&rdquo; column if the [Trx ID] you generated already exist in this column.</li>
+<li>If the [Trx ID] you generated already exist in this column then regenerate a new [Trx ID] because I don&rsquo;t want duplicate values in this column.</li>
+<li>BUT IF the [Trx ID] you generated does NOT already exist in this column then populate the result in [Trx ID] column.</li>
+<li>Make sure to keep this field as read only.<br /> </li>
+</ul>
+</li>
+<li>[Customer Name] = Required. HTML Searchable Drop-Down using select2, chosen or other libraries
+<ul>
+<li>Go to google sheet &ldquo;Customers&rdquo; &gt; named range &ldquo;RANGECUSTOMERS&rdquo; &gt; column name &ldquo;Customer Name&rdquo;</li>
+<li>Populate all values from this column in this drop-down excluding column name on row 1.</li>
+<li>!!!Important!!! Only populate the rows containing data. Ignore blank/empty rows.<br /> </li>
+</ul>
+</li>
+<li>[State] <strong>=</strong> Read Only. Auto Fetch based on [Customer Name]
+<ul>
+<li>Get the [Customer Name] selected by user from [Customer Name] drop-down</li>
+<li>Match that [Customer Name] with entries in google sheet &ldquo;Customers&rdquo; named range &ldquo;RANGECUSTOMERS&rdquo; column name &ldquo;Customer Name&rdquo;</li>
+<li>For the matching row, get the corresponding value from &ldquo;State&rdquo; column</li>
+<li>And populate the result in [State] field.</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>[City] <strong>=</strong> Read Only. Auto Fetch based on [Customer Name]</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>Get the [Customer Name] selected by user from [Customer Name] drop-down</li>
+<li>Match that [Customer Name] with entries in google sheet &ldquo;Customers&rdquo; named range &ldquo;RANGECUSTOMERS&rdquo; column name &ldquo;Customer Name&rdquo;</li>
+<li>For the matching row, get the corresponding value from &ldquo;City&rdquo; column</li>
+<li>And populate the result in [City] field.<br /> </li>
+</ul>
+<ul>
+<li>[Customer ID] <strong>=</strong> Read Only. Auto Fetch based on [Customer Name]</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>Get the [Customer Name] selected by user from [Customer Name] drop-down</li>
+<li>Match that [Customer Name] with entries in google sheet &ldquo;Customers&rdquo; named range &ldquo;RANGECUSTOMERS&rdquo; column name &ldquo;Customer Name&rdquo;</li>
+<li>For the matching row, get the corresponding value from &ldquo;Customer ID&rdquo; column</li>
+<li>And populate the result in [Customer ID] field.<br /> </li>
+</ul>
+<ul>
+<li>[SO ID] HTML Searchable Drop-Down using select2, chosen or other libraries
+<ul>
+<li>Get the [Customer ID] populated in the [Customer ID] field.</li>
+<li>Match that [Customer ID] with entries in google sheet &ldquo;SalesOrders&rdquo; named range &ldquo;RANGESO&rdquo; column name &ldquo;Customer ID&rdquo;</li>
+<li>FOR EACH matching instance of &ldquo;Customer ID&rdquo;, get the value from corresponding &ldquo;SO ID&rdquo; column</li>
+<li>And populate in this drop-down.</li>
+<li>!!!Important!!! Only populate the rows containing data. Ignore blank/empty rows.<br /> </li>
+</ul>
+</li>
+<li>[Invoice Num] HTML Searchable Drop-Down using select2, chosen or other libraries
+<ul>
+<li>Get the [Customer ID] populated in the [Customer ID] field.</li>
+<li>Match that [Customer ID] with entries in google sheet &ldquo;SalesOrders&rdquo; named range &ldquo;RANGESO&rdquo; column name &ldquo;Customer ID&rdquo;</li>
+<li>FOR EACH matching instance of &ldquo;Customer ID&rdquo;, get the value from corresponding &ldquo;Invoice Num&rdquo; column</li>
+<li>And populate in this drop-down.</li>
+<li>!!!Important!!! Only populate the rows containing data. Ignore blank/empty rows.</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>[SO Balance] Read-Only, auto fetch based on [SO ID]
+<ul>
+<li>Get the [SO ID] selected by user in [SO ID] field.</li>
+<li>And match this [SO ID] with the entries in &ldquo;SO ID&rdquo; column of google sheet &ldquo;SalesOrders&rdquo; named range &ldquo;RANGESO&rdquo;</li>
+<li>For the matching row, get the corresponding value from &ldquo;SO Balance&rdquo; column.</li>
+<li>And populate in this field.</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<ul>
+<li>[PMT Mode] Drop-Down
+<ul>
+<li>Go to google sheet &ldquo;Dimensions&rdquo; named range &ldquo;RANGEDIMENSIONS&rdquo; column name &ldquo;PMT Mode&rdquo;</li>
+<li>And populate all values from this column in this drop-down excluding column names on row 1.</li>
+<li>!!!Important!!! Only populate the rows containing data. Ignore blank/empty rows.<br /> </li>
+</ul>
+</li>
+<li>[Amount Received] Number only. 2 decimal place</li>
+<li>When user enters value in this field check IF;
+<ul>
+<li>[Amount Received] is greater than [SO Balance], then HTML alert error &ldquo;Amount received is more than SO Balance&rdquo;. And don&rsquo;t let the user submit the form.</li>
+</ul>
+</li>
+<li>Otherwise, let user submit the form.</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>Also provide 2 buttons aligned bottom right on this form
+<ul>
+<li>{Save} button, and {Close} button</li>
+</ul>
+</li>
+<li>If user clicks {Close} button, exit the form</li>
+<li>If user clicks {Save} button then validate the form and save the data on the next available empty row of google sheet &ldquo;Receipts&rdquo; named range &ldquo;RANGERECEIPTS&rdquo; as follows;</li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>Step-1: Saving Data on &ldquo;Receipts&rdquo; sheet</strong></p>
+<ul>
+<li>Save [Trx Date] in &ldquo;Trx Date&rdquo; column. Important: This column is formatted as date on google sheet as follows; &ldquo;MM/DD/YYYY&rdquo;. So please use an appropriate object/utility when you fetch data from google sheet to HTML table [needed later in this prompt].</li>
+<li>Save [Trx ID] in &ldquo;Trx ID&rdquo; column</li>
+<li>Save [Customer ID] in &ldquo;Customer ID&rdquo; column</li>
+<li>Save [Customer Name] in &ldquo;Customer Name&rdquo; column</li>
+<li>Save [State] in &ldquo;State&rdquo; column</li>
+<li>Save [City] in &ldquo;City&rdquo; column</li>
+<li>Save [SO ID] in &ldquo;SO ID&rdquo; column</li>
+<li>Save [Invoice Num] in &ldquo;Invoice Num&rdquo; column</li>
+<li>Save [PMT Mode] in &ldquo;PMT Mode&rdquo; column</li>
+<li>Save [Amount Received] in &ldquo;Amount Received&rdquo; column</li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>Step-2: Call functions in exact sequence.</strong></p>
+<ul>
+<li>After completing Step-2, call the following functions in this EXACT SEQUENCE;
+<ul>
+<li>&ldquo;calcSOBalance&rdquo;</li>
+<li>&ldquo;calcBalanceReceivable&rdquo;</li>
+<li>&ldquo;updateReceiptStatus&rdquo;</li>
+</ul>
+</li>
+</ul>
+<p>Here are instructions for &ldquo;updateReceiptStatus&rdquo; function. Other two functions are already built. You just need to call them.</p>
+<ul>
+<li>FUNCTION &ldquo;updateReceiptStatus&rdquo;
+<ul>
+<li>For each entry in &ldquo;SO ID&rdquo; column of google sheet &ldquo;SalesOrders&rdquo; named range &ldquo;RANGESO&rdquo; CHECK;
+<ul>
+<li>IF the value in column name &ldquo;Total SO Amount&rdquo; is less than the value n &ldquo;Total Received&rdquo; column, then write &ldquo;Partial Receipt&rdquo; in &ldquo;Receipt Status&rdquo; column</li>
+<li>IF the value in column name &ldquo;Total SO Amount&rdquo; equal to the value in &ldquo;Total Received&rdquo; column, then write &ldquo;Received&rdquo; in &ldquo;Receipt Status&rdquo; column</li>
+<li>IF the value in column name &ldquo;Total Received&rdquo; is NIL or zero or blank then write &ldquo;Pending&rdquo; in &ldquo;Receipt Status&rdquo; column<br /> </li>
+</ul>
+</li>
+<li>After completing the process, show green html alert success message &ldquo;New Receipt Saved&rdquo;</li>
+<li>And refresh {receiptlist} HTML table to display updated records.</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Save} button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<ol start="4">
+<li><strong>{receiptlist} HTML table</strong></li>
+</ol>
+<p>After &ldquo;Navigation links and search bar&rdquo;, create a new container.</p>
+<ul>
+<li>Go to google sheet &ldquo;Receipts&rdquo; &gt; named range &ldquo;RANGESO&rdquo;</li>
+<li>And render all the column names and the data rows from that sheet/named range as an HTML table</li>
+<li>Note: Column names are already provided in the start.</li>
+<li>Important: Only display the data rows containing data. Ignore blank/empty rows.</li>
+</ul>
+<p><strong>!!!IMPORTANT!!! </strong>when rendering {receiptlist} html table please remember that the column name &ldquo;Trx Date&rdquo; in the named range &ldquo;RANGERECEIPTS&rdquo; contains date object formatted as &ldquo;MM/DD/YYYY&rdquo;. So please use an appropriate utility to render the date in front end {receiptlist} HTML table.</p>
+<p>&nbsp;</p>
+<ol start="5">
+<li><strong>{Edit} {Update} and {Delete} </strong>functionality in {receiptlist} html table</li>
+</ol>
+<ul>
+<li>With each row on {receiptlist} HTML table, provide 2 action links/buttons
+<ul>
+<li>{Edit} button</li>
+<li>{Delete} button</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><strong>{Edit} and {Update} functionality in {receiptlist} html table</strong></li>
+<li>When user clicks <strong>{Edit} </strong>button;
+<ul>
+<li>Get the data from that row.</li>
+<li>Reopen the HTML popup form that you already built.</li>
+<li>And populate the data of that row on this HTML popup form.</li>
+<li>Provide {Update} and {Close} button on this popup form.</li>
+<li>If user clicks {Close} button, don&rsquo;t do anything.</li>
+<li>If user clicks {Update} button, then save the data back into the same row on google sheet</li>
+<li>And refresh the {receiptlist} html table to display updated records.</li>
+</ul>
+</li>
+<li>After updating the data, call these functions in this exact sequence.
+<ul>
+<li>&ldquo;calcSOBalance&rdquo;</li>
+<li>&ldquo;calcBalanceReceivable&rdquo;</li>
+<li>&ldquo;updateReceiptStatus&rdquo;</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>After completing the process, show green html alert success message &ldquo;Receipt Updated&rdquo;</li>
+<li>And refresh {receiptlist} HTML table to display updated records.</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Save} button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><strong>{Delete} functionality in {receiptlist} html table</strong></li>
+<li>When user clicks <strong>{Delete} </strong>button;
+<ul>
+<li>Give user a confirmation popup to &ldquo;Confirm&rdquo; or &ldquo;Cancel&rdquo; the deletion.</li>
+<li>If user clicks &ldquo;Cancel&rdquo; then exit the popup form.</li>
+<li>If user clicks &ldquo;Confirm&rdquo;, then data that row from google sheet.</li>
+<li>And refresh the {receiptlist} html table to display updated records.</li>
+</ul>
+</li>
+<li>After updating the data, call these functions in this exact sequence.
+<ul>
+<li>&ldquo;calcSOBalance&rdquo;</li>
+<li>&ldquo;calcBalanceReceivable&rdquo;</li>
+<li>&ldquo;updateReceiptStatus&rdquo;</li>
+</ul>
+</li>
+<li>After completing the process, show green html alert success message &ldquo;Receipt Updated&rdquo;</li>
+<li>And refresh {receiptlist} HTML table to display updated records.</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Save} button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p><strong>&nbsp;</strong></p>
+<ol start="6">
+<li><strong>Search Functionality in {receiptlist} HTML table</strong></li>
+</ol>
+<ul>
+<li>Refer to the initial instructions provided in &ldquo;Navigation links and search bar&rdquo; section.</li>
+<li>In the drop-down, populate the following options (Search Criteria);
+<ul>
+<li>&ldquo;All&rdquo;</li>
+<li>&ldquo;SO ID&rdquo;</li>
+<li>&ldquo;Customer Name&rdquo;</li>
+<li>&ldquo;Invoice Num&rdquo;</li>
+<li>&ldquo;PMT Mode&rdquo;</li>
+</ul>
+</li>
+<li>If user selects &ldquo;SO ID&rdquo; as search criteria, input search query in search box and click {Search} button
+<ul>
+<li>Match the search query in &ldquo;SO ID&rdquo; column of {receiptlist} HTML table and filter the records (Partial Match)</li>
+<li>If no data is found, display HTML alert message &ldquo;No matching data found&rdquo;<br /> </li>
+</ul>
+</li>
+<li>Similarly, build search functionality for other remaining criteria i.e.,
+<ul>
+<li>Drop-down = &ldquo;Customer Name&rdquo; = Search and filter in &ldquo;Customer Name&rdquo; column of {receiptlist} HTML table</li>
+<li>Drop-down = &ldquo;Invoice Num&rdquo; = Search and filter in &ldquo;Invoice Num&rdquo; column of {receiptlist} HTML table</li>
+<li>Drop-down = &ldquo;PMT Mode&rdquo; = Search and filter in &ldquo;PMT Mode&rdquo; column of {receiptlist} HTML table</li>
+<li><br /> </li>
+</ul>
+</li>
+<li>If user clicks {Clear} button
+<ul>
+<li>Remove search query from search box</li>
+<li>Reset the {receiptlist} HTML table and display all records</li>
+</ul>
+</li>
+<li>By default, set the {receiptlist} HTML table to display all records and keep the drop-down option = &ldquo;All&rdquo;</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Search} and {Clear} button is clicked.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>(1) function "calcsoreceipts"</p>
+<ul>
+<li>For each &ldquo;SO ID&rdquo; in &ldquo;SO ID&rdquo; column of google sheet &ldquo;SalesOrders&rdquo; &gt; named range &ldquo;RANGESO&rdquo;</li>
+</ul>
+<p>o&nbsp;&nbsp;&nbsp; Create a sumif like formula</p>
+<p>o&nbsp;&nbsp;&nbsp; Match each &ldquo;SO ID&rdquo; from &ldquo;SO ID&rdquo; column of named range &ldquo;RANGESO&rdquo; with the entries in &ldquo;SO ID&rdquo; column of named range &ldquo;RANGERECEIPTS&rdquo;</p>
+<p>o&nbsp;&nbsp;&nbsp; And sum the amounts from &ldquo;Amount Received&rdquo; column of named range &ldquo;RANGERECEIPTS&rdquo;</p>
+<p>o&nbsp;&nbsp;&nbsp; Then save the result in &ldquo;Total Receiveed&rdquo; column in the respective row of named range &ldquo;RANGESO&rdquo;</p>
+<ul>
+<li>Loop this function for all rows containing data in &ldquo;SO ID&rdquo; column of named range &ldquo;RANGESO&rdquo;</li>
+</ul>
+<p>&nbsp;</p>
+<p>(2) function "calctotalreceipts"</p>
+<ul>
+<li>For each &ldquo;Customer ID&rdquo; in &ldquo;Customer ID&rdquo; column of google sheet &ldquo;Customers&rdquo; &gt; named range &ldquo;RANGECUSTOMERS&rdquo;</li>
+</ul>
+<p>o&nbsp;&nbsp;&nbsp; Create a sumif like formula</p>
+<p>o&nbsp;&nbsp;&nbsp; Match each &ldquo;Customer ID&rdquo; from &ldquo;Customer ID&rdquo; column of named range &ldquo;RANGECUSTOERS&rdquo; with the entries in &ldquo;Customer ID&rdquo; column of named range &ldquo;RANGESO&rdquo;</p>
+<p>o&nbsp;&nbsp;&nbsp; And sum the amounts from &ldquo;Total Received&rdquo; column of named range &ldquo;RANGESO&rdquo;</p>
+<p>o&nbsp;&nbsp;&nbsp; Then save the result in &ldquo;Total Receipts&rdquo; column in the respective row of named range &ldquo;RANGECUSTOMERS&rdquo;</p>
+<ul>
+<li>Loop this function for all rows containing data in &ldquo;Customer ID&rdquo; column of named range &ldquo;RANGECUSTOMERS&rdquo;</li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>TO-DO AND OTHER INSTRUCTIONS.</strong></p>
+<ul>
+<li>Please write HTML, CSS, Javascript code in a single file &ldquo;receipts.html&rdquo;</li>
+<li>Write additional GS (if required) code in a single file &ldquo;gsreceipts.gs&rdquo;</li>
+<li>Use unique names for HTML IDs, CSS classes, javascript functions and GS functions so that the function names do not conflict because there are multiple modules</li>
+<li>You can use the word &ldquo;rc&rdquo; at the start of each javascript and GS functions as well as for HTML and CSS IDs, classes and elements to make it unique.</li>
+<li>Use font awesome and include appropriate icons where necessary i.e., with links, input fields and buttons.</li>
+<li>Use white, light black, light aqua, teal and grey color combination</li>
+<li>Use Poppins, Roboto and Montserrat google fonts.</li>
+</ul>
+<p>&nbsp;</p>
+<p>ACT AS A PROFESSIONAL GOOGLE SHEETS APPS SCRIPT DEVELOPER.<br /> THOROUGHLY ANALYZE THE INSTRUCTIONS AND PROVIDE COMPLETE AND WORKING HTML, CSS, JAVASCRIPT, AND .GS (GOOGLE APPS SCRIPT) CODE FOR THIS MODULE<br /> </p>
+<p>REMEMBER TO CONSULT GOOGLE SHEETS APPS SCRIPT DOCUMENTATION IF YOU ARE UNSURE ABOUT ANYTHING.<br /> <a href="https://developers.google.com/apps-script">https://developers.google.com/apps-script</a></p>
+<p>&nbsp;</p>
+<p>ACT AS A PROFESSIONAL FULL STACK DEVELOPER.<br /> THOROUGHLY ANALYZE THE INSTRUCTIONS AND PROVIDE COMPLETE AND WORKING HTML, CSS, JAVASCRIPT, AND .GS (GOOGLE APPS SCRIPT) CODE FOR THIS MODULE.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2><span style="color: #ff0000;"><strong>PROMPT 8</strong></span></h2>
+<h2><span style="color: #ff0000;"><strong>INSTRUCTIONS FOR PAYMENTS MODULE &ndash; payments.html and gspayments.gs</strong></span></h2>
+<ul>
+<li>I am building an inventory management application using google sheets apps script.</li>
+<li>The script is tied to my google sheet.</li>
+<li>Navigation template is already built so don&rsquo;t use doget.</li>
+<li>Now I want to build a module called &ldquo;Payments&rdquo;</li>
+<li>We will refer to multiple google sheets in this module.</li>
+<li>But the details of the main sheet that will be used is as follows</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>Sheet name &ldquo;Payments&rdquo;</li>
+<li>Named Range &ldquo;RANGEPAYMENTS&rdquo;</li>
+<li>The column names on google sheet &ldquo;Payments&rdquo; named range &ldquo;RANGEPAYMENTS&rdquo; are as follows;
+<ul>
+<li>Trx Date</li>
+<li>Trx ID</li>
+<li>Supplier ID</li>
+<li>Supplier Name</li>
+<li>State</li>
+<li>City</li>
+<li>PO ID</li>
+<li>Bill Num</li>
+<li>PMT Mode</li>
+<li>Amount Paid</li>
+</ul>
+</li>
+<li>Column names on google sheet &ldquo;Payments&rdquo; named range &ldquo;RANGEPAYMENTS&rdquo; are exactly in the sequence provided above</li>
+<li>Column names are on row 1 and data starts from row 2.</li>
+</ul>
+<p>Important: the column named &ldquo;Trx Date&rdquo; is formatted as a date on google sheet as follows &ldquo;MM/DD/YYYY&rdquo;. So please use an appropriate date object / utility to render the table on HTML page.</p>
+<p><strong>payments.html</strong></p>
+<ul>
+<li><strong>Heading and subheading</strong></li>
+<li>Create a heading (aligned left) = &ldquo;Payments Module&rdquo;</li>
+<li>Subheading (aligned left) = &ldquo;Create Payments Against Purchase Orders&rdquo;<br /> </li>
+<li><strong>Navigation links and search bar</strong></li>
+<li>After &ldquo;Heading and subheading&rdquo; create a separate container i.e., a single row.</li>
+<li>Provide following link aligned left with font awesome icon.
+<ul>
+<li>{New Payment}</li>
+</ul>
+</li>
+<li>Also provide the following elements in the same row aligned right
+<ul>
+<li>A drop-down</li>
+<li>A search box linked with drop-down</li>
+<li>{Search} button</li>
+<li>{Clear} button</li>
+</ul>
+</li>
+<li>Specific instructions are provided later in this prompt<br /> </li>
+<li><strong>{New Payment}</strong> button with plus icon aligned left.</li>
+</ul>
+<p>Open a 2 column HTML popup form when {New Payment} button is clicked and provide following fields;</p>
+<p><strong>FORM FIELDS</strong></p>
+<ul>
+<li>[Trx Date] Required, date picker</li>
+<li>[Trx ID] required, read-only, drop-down
+<ul>
+<li>Provide a {Generate} button with this field</li>
+<li>When {Generate} button is clicked</li>
+<li>Generate a unique random [Trx ID] starting with letter &ldquo;PT&rdquo; followed by 5 random numbers. For example. &ldquo;PT45965&rdquo;</li>
+<li>After generating the [Trx ID] go to google sheet &ldquo;Payments&rdquo; named range &ldquo;RANGEPAYMENTS&rdquo; column name &ldquo;Trx ID&rdquo;</li>
+<li>Check in &ldquo;Trx ID&rdquo; column if the [Trx ID] you generated already exist in this column.</li>
+<li>If the [Trx ID] you generated already exist in this column then regenerate a new [Trx ID] because I don&rsquo;t want duplicate values in this column.</li>
+<li>BUT IF the [Trx ID] you generated does NOT already exist in this column then populate the result in [Trx ID] column.</li>
+<li>Make sure to keep this field as read only.<br /> </li>
+</ul>
+</li>
+<li>[Supplier Name] = Required. HTML Searchable Drop-Down using select2, chosen or other libraries
+<ul>
+<li>Go to google sheet &ldquo;Suppliers&rdquo; &gt; named range &ldquo;RANGESUPPLIERS&rdquo; &gt; column name &ldquo;Supplier Name&rdquo;</li>
+<li>Populate all values from this column in this drop-down excluding column name on row 1.</li>
+<li>!!!Important!!! Only populate the rows containing data. Ignore blank/empty rows.<br /> </li>
+</ul>
+</li>
+<li>[Supplier ID] <strong>=</strong> Read Only. Auto Fetch based on [Supplier Name]
+<ul>
+<li>Get the [Supplier Name] selected by user from [Supplier Name] drop-down</li>
+<li>Match that [Supplier Name] with entries in google sheet &ldquo;Suppliers&rdquo; named range &ldquo;RANGESUPPLIERS&rdquo; column name &ldquo;Supplier Name&rdquo;</li>
+<li>For the matching row, get the corresponding value from &ldquo;Supplier ID&rdquo; column</li>
+<li>And populate the result in [Supplier ID] field.<br /> </li>
+</ul>
+</li>
+<li>[State] <strong>=</strong> Read Only. Auto Fetch based on [Supplier Name]
+<ul>
+<li>Get the [Supplier Name] selected by user in the [Supplier Name] drop-down</li>
+<li>Match that [Supplier Name] in google sheet &ldquo;Suppliers&rdquo; named range &ldquo;RANGESUPPLIERS&rdquo; column name &ldquo;Supplier Name&rdquo;</li>
+<li>For the matching row, get the corresponding value from &ldquo;State&rdquo; column</li>
+<li>And populate the result in [State] field.</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>[City] <strong>=</strong> Read Only. Auto Fetch based on [Supplier Name]</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>Get the [Supplier Name] selected by user in the [Supplier Name] drop-down</li>
+<li>Match that [Supplier Name] in google sheet &ldquo;Suppliers&rdquo; named range &ldquo;RANGESUPPLIERS&rdquo; column name &ldquo;Supplier Name&rdquo;</li>
+<li>For the matching row, get the corresponding value from &ldquo;City&rdquo; column</li>
+<li>And populate the result in [City] field.<br /> </li>
+</ul>
+<ul>
+<li>[PO ID] HTML Searchable Drop-Down using select2, chosen or other libraries
+<ul>
+<li>Get the [Supplier Name] selected by user in the [Supplier Name] drop-down</li>
+<li>Match that [Supplier Name] in google sheet &ldquo;PurchaseOrders&rdquo; named range &ldquo;RANGEPO&rdquo; column name &ldquo;Supplier Name&rdquo;</li>
+<li>FOR EACH matching instance of &ldquo;Supplier Name&rdquo;, get the values from corresponding &ldquo;PO ID&rdquo; column</li>
+<li>And populate in this drop-down.</li>
+<li>Note: one supplier can have multiple &ldquo;PO ID&rdquo;<br /> </li>
+</ul>
+</li>
+<li>[Bill Num] HTML Searchable Drop-Down using select2, chosen or other libraries
+<ul>
+<li>Get the [Supplier Name] selected by user in the [Supplier Name] drop-down</li>
+<li>Match that [Supplier Name] in google sheet &ldquo;PurchaseOrders&rdquo; named range &ldquo;RANGEPO&rdquo; column name &ldquo;Supplier Name&rdquo;</li>
+<li>FOR EACH matching instance of &ldquo;Supplier Name&rdquo;, get the values from corresponding &ldquo;Bill Num&rdquo; column</li>
+<li>And populate in this drop-down.</li>
+<li>Note: one supplier can have multiple &ldquo;Bill Num&rdquo;<br /> </li>
+</ul>
+</li>
+<li>[PO Balance] Read-Only, auto fetch based on [PO ID]
+<ul>
+<li>Get the [PO ID] selected by user in [PO ID] field.</li>
+<li>And match this [PO ID] with the entries in &ldquo;PO ID&rdquo; column of google sheet &ldquo;PurchaseOrders&rdquo; named range &ldquo;RANGEPO&rdquo;</li>
+<li>For the matching row, get the corresponding value from &ldquo;PO Balance&rdquo; column.</li>
+<li>And populate in this field.</li>
+<li>Make sure to keep this field as read-only.</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<ul>
+<li>[PMT Mode] Drop-Down
+<ul>
+<li>Go to google sheet &ldquo;Dimensions&rdquo; named range &ldquo;RANGEDIMENSIONS&rdquo; column name &ldquo;PMT Mode&rdquo;</li>
+<li>And populate all values from this column in this drop-down excluding column names on row 1.</li>
+<li>!!!Important!!! Only populate the rows containing data. Ignore blank/empty rows.<br /> </li>
+</ul>
+</li>
+<li>[Amount Paid] Number only. 2 decimal place</li>
+<li>When user enters value in this field check IF;
+<ul>
+<li>[Amount Paid] is greater than [PO Balance], then HTML alert error &ldquo;Amount paid is more than PO Balance&rdquo;. And don&rsquo;t let the user submit the form.</li>
+</ul>
+</li>
+<li>Otherwise, let user submit the form.</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>Also provide 2 buttons aligned bottom right on this form
+<ul>
+<li>{Save} button, and {Close} button</li>
+</ul>
+</li>
+<li>If user clicks {Close} button, exit the form</li>
+<li>If user clicks {Save} button then validate the form and save the data on the next available empty row of google sheet &ldquo;Payments&rdquo; named range &ldquo;RANGEPAYMENTS&rdquo; as follows;</li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>Step-1: Saving Data on &ldquo;Payments&rdquo; sheet</strong></p>
+<ul>
+<li>Save [Trx Date] in &ldquo;Trx Date&rdquo; column. Important: This column is formatted as date on google sheet as follows; &ldquo;MM/DD/YYYY&rdquo;. So please use an appropriate object/utility when you fetch data from google sheet to HTML table [needed later in this prompt].</li>
+<li>Save [Trx ID] in &ldquo;Trx ID&rdquo; column</li>
+<li>Save [Supplier ID] in &ldquo;Supplier ID&rdquo; column</li>
+<li>Save [Supplier Name] in &ldquo;Supplier Name&rdquo; column</li>
+<li>Save [State] in &ldquo;State&rdquo; column</li>
+<li>Save [City] in &ldquo;City&rdquo; column</li>
+<li>Save [PO ID] in &ldquo;PO ID&rdquo; column</li>
+<li>Save [Bill Num] in &ldquo;Bill Num&rdquo; column</li>
+<li>Save [PMT Mode] in &ldquo;PMT Mode&rdquo; column</li>
+<li>Save [Amount Paid] in &ldquo;Amount Paid&rdquo; column</li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>Step-2: Call functions in exact sequence.</strong></p>
+<ul>
+<li>After completing Step-1, call the following functions in this EXACT SEQUENCE;
+<ul>
+<li>&ldquo;calcpopayments&rdquo;</li>
+<li>&ldquo;calctotalpayments&rdquo;</li>
+<li>&ldquo;poUpdatePOBalance&rdquo; &ndash; don&rsquo;t build this function . just call. Its already built</li>
+<li>&ldquo;poUpdateBalancePayable&rdquo; deep&ndash; don&rsquo;t build this function . just call. Its already built</li>
+<li>&ldquo;updatePaymentStatus&rdquo;</li>
+</ul>
+</li>
+</ul>
+<p><br /> </p>
+<ul>
+<li>After completing the process, show green html alert success message &ldquo;New Payment Saved&rdquo;</li>
+<li>And refresh {paymentlist} HTML table to display updated records.</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Save} button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>&nbsp;</p>
+<ol start="4">
+<li><strong>{paymentlist} HTML table</strong></li>
+</ol>
+<p>After &ldquo;Navigation links and search bar&rdquo;, create a new container.</p>
+<ul>
+<li>Go to google sheet &ldquo;Payments&rdquo; &gt; named range &ldquo;RANGEPAYMENTS&rdquo;</li>
+<li>And render all the column names and the data rows from that sheet/named range as an HTML table</li>
+<li>Note: Column names are already provided in the start.</li>
+<li>Important: Only display the data rows containing data. Ignore blank/empty rows.</li>
+</ul>
+<p><strong>!!!IMPORTANT!!! </strong>when rendering {paymentlist} html table please remember that the column name &ldquo;Trx Date&rdquo; in the named range &ldquo;RANGEPAYMENTS&rdquo; contains date object formatted as &ldquo;MM/DD/YYYY&rdquo;. So please use an appropriate utility to render the date in front end {paymentlist} HTML table.</p>
+<p>&nbsp;</p>
+<ol start="5">
+<li><strong>{Edit} {Update} and {Delete} </strong>functionality in {paymentlist} html table</li>
+</ol>
+<ul>
+<li>With each row on {paymentlist} HTML table, provide 2 action links/buttons
+<ul>
+<li>{Edit} button</li>
+<li>{Delete} button</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><strong>{Edit} and {Update} functionality in {paymentlist} html table</strong></li>
+<li>When user clicks <strong>{Edit} </strong>button;
+<ul>
+<li>Get the data from that row.</li>
+<li>Reopen the HTML popup form that you already built.</li>
+<li>And populate the data of that row on this HTML popup form.</li>
+<li>Provide {Update} and {Close} button on this popup form.</li>
+<li>If user clicks {Close} button, don&rsquo;t do anything.</li>
+<li>If user clicks {Update} button, then save the data back into the same row on google sheet</li>
+<li>And refresh the {paymentlist} html table to display updated records.</li>
+</ul>
+</li>
+<li>After updating the data, call these functions in this exact sequence.
+<ul>
+<li>&ldquo;calcpopayments&rdquo;</li>
+<li>&ldquo;calctotalpayments&rdquo;</li>
+<li>&ldquo;poUpdatePOBalance&rdquo;</li>
+<li>&ldquo;poUpdateBalancePayable&rdquo;</li>
+<li>&ldquo;updatePaymentStatus&rdquo;</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li>After completing the process, show green html alert success message &ldquo;Payment Updated&rdquo;</li>
+<li>And refresh {paymentlist} HTML table to display updated records.</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Save} button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><strong>{Delete} functionality in {paymentlist} html table</strong></li>
+<li>When user clicks <strong>{Delete} </strong>button;
+<ul>
+<li>Give user a confirmation popup to &ldquo;Confirm&rdquo; or &ldquo;Cancel&rdquo; the deletion.</li>
+<li>If user clicks &ldquo;Cancel&rdquo; then exit the popup form.</li>
+<li>If user clicks &ldquo;Confirm&rdquo;, then data that row from google sheet.</li>
+<li>And refresh the {paymentlist} html table to display updated records.</li>
+</ul>
+</li>
+<li>After deleting the data, call these functions in this exact sequence.
+<ul>
+<li>&ldquo;calcpopayments&rdquo;</li>
+<li>&ldquo;calctotalpayments&rdquo;</li>
+<li>&ldquo;poUpdatePOBalance&rdquo;</li>
+<li>&ldquo;poUpdateBalancePayable&rdquo;</li>
+<li>&ldquo;updatePaymentStatus&rdquo;<br /> </li>
+</ul>
+</li>
+<li>After completing the process, show green html alert success message &ldquo;Payment deleted&rdquo;</li>
+<li>And refresh {paymentlist} HTML table to display updated records.</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Save} button is clicked so that user can&rsquo;t accidently save the data twice.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p><strong>&nbsp;</strong></p>
+<ol start="6">
+<li><strong>Search Functionality in {paymentlist} HTML table</strong></li>
+</ol>
+<ul>
+<li>Refer to the initial instructions provided in &ldquo;Navigation links and search bar&rdquo; section.</li>
+<li>In the drop-down, populate the following options (Search Criteria);
+<ul>
+<li>&ldquo;All&rdquo;</li>
+<li>&ldquo;PO ID&rdquo;</li>
+<li>&ldquo;Supplier Name&rdquo;</li>
+<li>&ldquo;Bill Num&rdquo;</li>
+<li>&ldquo;PMT Mode&rdquo;</li>
+</ul>
+</li>
+<li>If user selects &ldquo;PO ID&rdquo; as search criteria, input search query in search box and click {Search} button
+<ul>
+<li>Match the search query in &ldquo;PO ID&rdquo; column of {paymentlist} HTML table and filter the records (Partial Match)</li>
+<li>If no data is found, display HTML alert message &ldquo;No matching data found&rdquo;<br /> </li>
+</ul>
+</li>
+<li>Similarly, build search functionality for other remaining criteria i.e.,
+<ul>
+<li>Drop-down = &ldquo;Supplier Name&rdquo; = Search and filter in &ldquo;Supplier Name&rdquo; column of {paymentlist} HTML table</li>
+<li>Drop-down = &ldquo;Bill Num&rdquo; = Search and filter in &ldquo;Bill Num&rdquo; column of {paymentlist} HTML table</li>
+<li>Drop-down = &ldquo;PMT Mode&rdquo; = Search and filter in &ldquo;PMT Mode&rdquo; column of {paymentlist} HTML table<br /> </li>
+</ul>
+</li>
+<li>If user clicks {Clear} button
+<ul>
+<li>Remove search query from search box</li>
+<li>Reset the {paymentlist} HTML table and display all records</li>
+</ul>
+</li>
+<li>By default, set the {paymentlist} HTML table to display all records and keep the drop-down option = &ldquo;All&rdquo;</li>
+<li>Also build &ldquo;Processing&rdquo; overlay when {Search} and {Clear} button is clicked.</li>
+<li>And deactivate &ldquo;Processing&rdquo; overlay when function execution/operation is complete.</li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>FUNCTIONS</strong></p>
+<ul>
+<li><strong>&ldquo;updatePaymentStatus&rdquo; function</strong></li>
+<li>For each entry in &ldquo;PO ID&rdquo; column of google sheet &ldquo;PurchaseOrders&rdquo; named range &ldquo;RANGEPO&rdquo; CHECK;
+<ul>
+<li>IF the value in column name &ldquo;Total Amount&rdquo; is less than the value n &ldquo;Total Paid&rdquo; column, then write &ldquo;Partial Payment&rdquo; in &ldquo;PMT Status&rdquo; column</li>
+<li>IF the value in column name &ldquo;Total Amount&rdquo; equal to the value in &ldquo;Total Paid&rdquo; column, then write &ldquo;Paid&rdquo; in &ldquo;PMT Status&rdquo; column</li>
+<li>IF the value in column name &ldquo;Total Paid&rdquo; is NIL or zero or blank then write &ldquo;Pending&rdquo; in &ldquo;PMT Status&rdquo; column</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><strong>"calcpopayments" function</strong></li>
+<li>For each &ldquo;PO ID&rdquo; in &ldquo;PO ID&rdquo; column of google sheet &ldquo;PurchaseOrders&rdquo; &gt; named range &ldquo;RANGEPO&rdquo;</li>
+<li>Create a sumif like formula</li>
+<li>Match each &ldquo;PO ID&rdquo; from &ldquo;PO ID&rdquo; column of named range &ldquo;RANGEPO&rdquo; with the entries in &ldquo;PO ID&rdquo; column of named range &ldquo;RANGEPAYMENS&rdquo;</li>
+<li>And sum the amounts from &ldquo;Amount Paid&rdquo; column of named range &ldquo;RANGEPAYMENTS&rdquo;</li>
+<li>Then save the result in &ldquo;Total Paid&rdquo; column in the respective row of named range &ldquo;RANGEPO&rdquo;</li>
+<li>Loop this function for all rows containing data in &ldquo;PO ID&rdquo; column of named range &ldquo;RANGEPO&rdquo;</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><strong>"calctotalpayments" function</strong></li>
+<li>For each &ldquo;Supplier ID&rdquo; in &ldquo;Supplier ID&rdquo; column of google sheet &ldquo;Suppliers&rdquo; &gt; named range &ldquo;RANGESUPPLIERS&rdquo;</li>
+<li>Create a sumif like formula</li>
+<li>Match each &ldquo;Supplier ID&rdquo; from &ldquo;Supplier ID&rdquo; column of named range &ldquo;RANGESUPPLIERS&rdquo; with the entries in &ldquo;Supplier ID&rdquo; column of named range &ldquo;RANGEPO&rdquo;</li>
+<li>And sum the amounts from &ldquo;Total Paid&rdquo; column of named range &ldquo;RANGEPO&rdquo;</li>
+<li>Then save the result in &ldquo;Total Payments&rdquo; column in the respective row of named range &ldquo;RANGESUPPLIERS&rdquo;</li>
+<li>Loop this function for all rows containing data in &ldquo;Supplier ID&rdquo; column of named range &ldquo;RANGESUPPLIERS&rdquo;</li>
+</ul>
+<p><strong>TO-DO AND OTHER INSTRUCTIONS.</strong></p>
+<ul>
+<li>Please write HTML, CSS, Javascript code in a single file &ldquo;payments.html&rdquo;</li>
+<li>Write additional GS (if required) code in a single file &ldquo;gspayments.gs&rdquo;</li>
+<li>Use unique names for HTML IDs, CSS classes, javascript functions and GS functions so that the function names do not conflict because there are multiple modules</li>
+<li>You can use the word &ldquo;pt&rdquo; at the start of each javascript and GS functions as well as for HTML and CSS IDs, classes and elements to make it unique.</li>
+<li>Use font awesome and include appropriate icons where necessary i.e., with links, input fields and buttons.</li>
+<li>Use white, light black, light aqua, teal and grey color combination</li>
+<li>Use Poppins, Roboto and Montserrat google fonts.</li>
+</ul>
+<p>&nbsp;</p>
+<p>ACT AS A PROFESSIONAL GOOGLE SHEETS APPS SCRIPT DEVELOPER.<br /> THOROUGHLY ANALYZE THE INSTRUCTIONS AND PROVIDE COMPLETE AND WORKING HTML, CSS, JAVASCRIPT, AND .GS (GOOGLE APPS SCRIPT) CODE FOR THIS MODULE<br /> </p>
+<p>REMEMBER TO CONSULT GOOGLE SHEETS APPS SCRIPT DOCUMENTATION IF YOU ARE UNSURE ABOUT ANYTHING.<br /> <a href="https://developers.google.com/apps-script">https://developers.google.com/apps-script</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2><span style="color: #ff0000;"><strong>PROMPT 9</strong></span></h2>
+<h2><span style="color: #ff0000;"><strong>INSTRUCTIONS FOR DASHBOARD &ndash; dashboard.html and gsdashboard.gs</strong></span></h2>
+<ul>
+<li>Here are the instructions to design the dashboard.</li>
+<li>You need to display charts so please use apex charts library and see their documentation</li>
+<li><a href="https://apexcharts.com/docs/installation/">https://apexcharts.com/docs/installation/</a></li>
+</ul>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<ul>
+<li><strong>Main heading</strong></li>
+<li>Heading (H2): &ldquo;Dashboard&rdquo; | Subheading (p): &ldquo;Key trends and business insights&rdquo;</li>
+<li>Dashboard Container Width = 100% with 20px padding;</li>
+</ul>
+<p><strong>(b) KPI Cards</strong></p>
+<ul>
+<li>Use grid columnar structure</li>
+<li>Create a row container after &ldquo;<strong>(a) Main heading&rdquo; </strong>and create 7 small cards (horizontal dimension.</li>
+<li>Fit all of these 7 cards in a single row container with 20px gap.</li>
+<li>Card background color = white.</li>
+<li>Color for heading, results and icons #021640</li>
+<li>Height = 100px for each card<br /> </li>
+<li><strong>Card 1</strong>
+<ul>
+<li>Title: &ldquo;Total Sales&rdquo; (aligned top left) with font awesome icon</li>
+<li>Go to google sheet &ldquo;SalesDetails&rdquo; named range &ldquo;RANGESD&rdquo; column name &ldquo;Total Sales Price&rdquo;</li>
+<li>Sum the values in this column and fetch on &ldquo;Total Sales&rdquo; card with &ldquo;$&rdquo; currency sign.</li>
+</ul>
+</li>
+<li><strong>Card 2</strong>
+<ul>
+<li>Title: &ldquo;Total Purchases&rdquo; (aligned top left) with font awesome icon</li>
+<li>Go to google sheet &ldquo;PurchaseDetails&rdquo; named range &ldquo;RANGEPD&rdquo; column name &ldquo;Total Purchase Price&rdquo;</li>
+<li>Sum the values in this column and fetch on &ldquo;Total Purchases&rdquo; card with &ldquo;$&rdquo; currency sign.</li>
+</ul>
+</li>
+<li><strong>Card 3</strong>
+<ul>
+<li>Title: &ldquo;Net Profit&rdquo; (aligned top left) with font awesome icon</li>
+<li>&ldquo;Total Sales&rdquo; amount minus &ldquo;Total Purchases&rdquo; amount</li>
+<li>Display result on &ldquo;Net Profit&rdquo; card with &ldquo;$&rdquo; currency sign.<br /> </li>
+</ul>
+</li>
+<li><strong>Card 4</strong>
+<ul>
+<li>Title: &ldquo;Total Receivable&rdquo; (aligned top left) with font awesome icon.</li>
+<li>Go to google sheet &ldquo;Customers&rdquo; named range &ldquo;RANGECUSTOMERS&rdquo; column name &ldquo;Balance Receivable&rdquo;</li>
+<li>Sum the values in this column and fetch on &ldquo;Total Receivables&rdquo; card with &ldquo;$&rdquo; currency sign (accounting format).<br /> </li>
+</ul>
+</li>
+<li><strong>Card 5</strong>
+<ul>
+<li>Title: &ldquo;Total Payable&rdquo; (aligned top left) with font awesome icon.</li>
+<li>Go to google sheet &ldquo;Suppliers&rdquo; named range &ldquo;RANGESUPPLIERS&rdquo; column name &ldquo;Balance Payable&rdquo;</li>
+<li>Sum the values in this column and fetch on &ldquo;Total Payable&rdquo; card with &ldquo;$&rdquo; currency sign (accounting format).</li>
+</ul>
+</li>
+<li><strong>Card 6</strong>
+<ul>
+<li>Title: &ldquo;Top Sales Location&rdquo; (aligned top left) with font awesome icon</li>
+<li>Go to google sheet &ldquo;Customers&rdquo; named range &ldquo;RANGECUSTOMERS&rdquo; column name &ldquo;City&rdquo;</li>
+<li>Extract the names of all unique &ldquo;City&rdquo; from this column.</li>
+<li>For each unique &ldquo;City&rdquo;, sum the amounts from &ldquo;Total Sales&rdquo; column.</li>
+<li>For the &ldquo;City&rdquo; with highest &ldquo;Total Sales&rdquo; amount, get the value of that &ldquo;City&rdquo;</li>
+<li>And display the result on &ldquo;Top Sales Location&rdquo; card.</li>
+</ul>
+</li>
+<li><strong>Card 7</strong>
+<ul>
+<li>Card Title: &ldquo;Top Selling Item&rdquo; (aligned top left) with font awesome icon</li>
+<li>Go to google sheet &ldquo;SalesDetails&rdquo; named range &ldquo;RANGESD&rdquo; column name &ldquo;Item Type&rdquo;</li>
+<li>Extract the names of all unique &ldquo;Item Type&rdquo; from this column.</li>
+<li>For each unique &ldquo;Item Type&rdquo;, sum the amounts from &ldquo;Total Sales Price&rdquo; column.</li>
+<li>For the &ldquo;Item Type&rdquo; with highest &ldquo;Total Sales Price&rdquo;, get the value of that &ldquo;Item Type&rdquo;</li>
+<li>And display the result on &ldquo;Top Selling Item&rdquo; card (aligned left).<br /> </li>
+</ul>
+</li>
+<li><strong>CSS AND STYLING INSTRUCTIONS FOR &ldquo;</strong><strong>KPI Cards&rdquo;</strong>
+<ul>
+<li>Heading font color: #021640</li>
+<li>Font awesome icon font color: #021640</li>
+<li>Card result / values font color: #021640</li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>(c) Charts from &ldquo;SalesDetails&rdquo; sheet</strong></p>
+<p><strong>!IMPORTANT! INSTRUCTIONS FOR CHARTS</strong></p>
+<ul>
+<li>Use these color codes for charts, titles, headings, subheadings, and axes fonts #021640, #0066CC, #0099CC, #4572C4, #558ED5, #1F4E79</li>
+<li>Use grid structure.</li>
+<li>Create 3 columns;
+<ul>
+<li>Column 1 Width = 40%</li>
+<li>Column 2 Width = 20%</li>
+<li>Column 3 Width = 40%</li>
+</ul>
+</li>
+<li>Place &ldquo;Chart 1&rdquo; in 1st column (take 100% of column width)</li>
+<li>Place &ldquo;Chart 2&rdquo; and &ldquo;Chart 3&rdquo; in 1st column (below chart 1) - take 50% of column width for each chart.</li>
+<li>Place &ldquo;Chart 4&rdquo; in 2nd column. Set this chart equal to 1st column&rsquo;s height.</li>
+<li>Place &ldquo;Chart 5&rdquo; and &ldquo;Chart 6&rdquo; in 3rd column side by side (take 50% of column width for each chart).</li>
+<li>Place &ldquo;Chart 7&rdquo; in 3rd column (below chart 5 and chart 6). Take 100% of column width.</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><strong>Chart 1</strong>
+<ul>
+<li>Card Title: &ldquo;Sales Trend&rdquo; (aligned top left)</li>
+<li>Height 300px</li>
+<li>Go to google sheet &ldquo;SalesDetails&rdquo; &gt; named range &ldquo;RANGESD&rdquo; &gt; column names &ldquo;SO Date&rdquo; and column name &ldquo;Total Sales Price&rdquo;</li>
+<li>Based on dates in &ldquo;SO Date&rdquo; column and sales amount in &ldquo;Total Sales Price&rdquo; column, create a smoothed &ldquo;SPLINE AREA CHART&rdquo;</li>
+<li>Plot &ldquo;SO Date&rdquo; on X Axis and &ldquo;Total Sales Price&rdquo; amount on Y Axis</li>
+<li>Group &ldquo;SO Date&rdquo; by &ldquo;Month&rdquo; and &ldquo;Year&rdquo;</li>
+<li>!IMPORTANT!: Date format in &ldquo;SO Date&rdquo; column is &ldquo;MM/DD/YYYY&rdquo; so please adjust accordingly while fetching data.</li>
+<li>Line color (#021640), area color #021640 (80% transparency), marker color # 021640, marker size (2px).</li>
+<li>Display Y Axis amounts in thousands i.e., 12K.<br /> </li>
+</ul>
+</li>
+<li><strong>Chart 2</strong>
+<ul>
+<li>Title: &ldquo;Sales By Location&rdquo; (aligned top left)</li>
+<li>Height 300px</li>
+<li>Go to google sheet &ldquo;SalesDetails&rdquo; named range &ldquo;RANGESD&rdquo; column names &ldquo;State&rdquo; and column name &ldquo;Total Sales Price&rdquo;</li>
+<li>Extract all unique values from &ldquo;State&rdquo; column.</li>
+<li>For each unique &ldquo;State&rdquo; sum the amounts from &ldquo;Total Sales Price&rdquo; column (like sumif formula).</li>
+<li>Create a &ldquo;COLUMN CHART&rdquo;.</li>
+<li>Plot &ldquo;State&rdquo; values on X axis and &ldquo;Total Sales Price&rdquo; amounts on Y axis</li>
+<li>Display Y axis amounts in thousands i.e, 12K</li>
+</ul>
+</li>
+</ul>
+<p><strong>&nbsp;</strong></p>
+<ul>
+<li><strong>Chart 3</strong>
+<ul>
+<li>Title: &ldquo;Sales By Category&rdquo; (aligned top left)</li>
+<li>Height 300px</li>
+<li>Go to google sheet &ldquo;SalesDetails&rdquo; named range &ldquo;RANGESD&rdquo; column names &ldquo;Item Type&rdquo; and column name &ldquo;Total Sales Price&rdquo;</li>
+<li>Extract all unique values from &ldquo;Item Type&rdquo; column.</li>
+<li>For each unique &ldquo;Item Type&rdquo; sum the amounts from &ldquo;Total Sales Price&rdquo; column (like sumif formula).</li>
+<li>Then calculate percentages based on &ldquo;Total Sales Price&rdquo; corresponding to each unique &ldquo;Item Type&rdquo;</li>
+<li>Based on each unique &ldquo;Item Type&rdquo; and &ldquo;Total Sales Price&rdquo;, create a &ldquo;PIE CHART&rdquo;<br /> </li>
+</ul>
+</li>
+<li><strong>Chart 4</strong>
+<ul>
+<li>Title: &ldquo;Top 10 Customers&rdquo; (aligned top left)</li>
+<li>Height 600px</li>
+<li>Go to &ldquo;SalesDetails&rdquo; sheet named range &ldquo;RANGESD&rdquo; column name &ldquo;Customer Name&rdquo; and column name &ldquo;Total Sales Price&rdquo;</li>
+<li>For each unique value in &ldquo;Customer Name&rdquo; column, sum the amounts from &ldquo;Total Sales Price&rdquo; column (like sumif formula).</li>
+<li>Then get the Top 10 &ldquo;Customer Name&rdquo; based on highest sales value from &ldquo;Total Sales Price&rdquo; column.</li>
+<li>Create a &ldquo;BAR CHART&rdquo; (Horizontal bars)</li>
+<li>Plot &ldquo;Customer Name&rdquo; on Y Axis and &ldquo;Total Sales Price&rdquo; amounts on X Axis.</li>
+<li>Display X axis amounts in thousands<br /> </li>
+</ul>
+</li>
+<li><strong>Chart 5</strong>
+<ul>
+<li>Title: &ldquo;Purchase By Location&rdquo; (aligned top left)</li>
+<li>Height 300px</li>
+<li>Go to google sheet &ldquo;PurchaseDetails&rdquo; named range &ldquo;RANGEPD&rdquo; column names &ldquo;State&rdquo; and column name &ldquo;Total Purchase Price&rdquo;</li>
+<li>Extract all unique values from &ldquo;State&rdquo; column.</li>
+<li>For each unique &ldquo;State&rdquo; sum the amounts from &ldquo;Total Purchase Price&rdquo; column (like sumif formula).</li>
+<li>Then calculate percentages (%) for each unique &ldquo;State&rdquo; corresponding to &ldquo;Total Purchase Price&rdquo;</li>
+<li>Based on each unique &ldquo;State&rdquo; and &ldquo;Total Purchase Price&rdquo;, create a &ldquo;FULL DONUT CHART&rdquo;<br /> </li>
+</ul>
+</li>
+<li><strong>Chart 6</strong>
+<ul>
+<li>Title: &ldquo;Purchase By Category&rdquo; (aligned top left)</li>
+<li>Height 300px</li>
+<li>Go to google sheet &ldquo;PurchaseDetails&rdquo; named range &ldquo;RANGEPD&rdquo; column name &ldquo;Date&rdquo;, column name &ldquo;Item Type&rdquo; and column name &ldquo;Total Purchase Price&rdquo;</li>
+<li>Extract all unique values from &ldquo;Item Type&rdquo; column.</li>
+<li>For each unique &ldquo;Item Type&rdquo; sum the amounts from &ldquo;Total Purchase Price&rdquo; column (like sumif formula).</li>
+<li>Created a &ldquo;STACKED COLUMN CHART&rdquo;</li>
+<li>Group &ldquo;Total Purchase Price&rdquo; and &ldquo;Item Type&rdquo; by &ldquo;Year&rdquo; based on dates in &ldquo;Date&rdquo; column.</li>
+<li>Plot &ldquo;Year&rdquo; on X Axis and &ldquo;Total Purchase Price&rdquo; amount on Y Axis</li>
+<li>Display Y axis amounts in thousands i.e., 12K<br /> </li>
+</ul>
+</li>
+</ul>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<ul>
+<li><strong>Chart 7</strong>
+<ul>
+<li>Title: &ldquo;Sales By City&rdquo; (aligned top left)</li>
+<li>Height 300px</li>
+<li>Go to google sheet &ldquo;SalesDetails&rdquo; named range &ldquo;RANGESD&rdquo; column name &ldquo;SO Date&rdquo;, column name &ldquo;City&rdquo; and column name &ldquo;Total Sales Price&rdquo;</li>
+<li>Extract all unique values from &ldquo;City&rdquo; column.</li>
+<li>For each unique &ldquo;City&rdquo; sum the amounts from &ldquo;Total Sales Amount&rdquo; column (like sumif formula).</li>
+<li>Created a &ldquo;TREE MAP&rdquo; chart</li>
+<li>Arrange &ldquo;City&rdquo; names based on &ldquo;Total Sales Amount&rdquo; from highest to lowest.</li>
+</ul>
+</li>
+</ul>
+<p><strong>TO-DO AND OTHER INSTRUCTIONS.</strong></p>
+<ul>
+<li>Please write HTML, CSS, Javascript code in a single file &ldquo;dashboard.html&rdquo;</li>
+<li>Write additional GS (if required) code in a single file &ldquo;gsdashboard.gs&rdquo;</li>
+<li>Use unique names for HTML IDs, CSS classes, javascript functions and GS functions so that the function names do not conflict because there are multiple modules</li>
+<li>You can use the word &ldquo;dash&rdquo; at the start of each javascript and GS functions as well as for HTML and CSS IDs, classes and elements to make it unique.</li>
+<li>Use font awesome and include appropriate icons where necessary i.e., with links, input fields and buttons.</li>
+<li>Use Poppins, Roboto and Montserrat google fonts.</li>
+</ul>
+<p>&nbsp;</p>
+<p>ACT AS A PROFESSIONAL GOOGLE SHEETS APPS SCRIPT DEVELOPER.<br /> THOROUGHLY ANALYZE THE INSTRUCTIONS AND PROVIDE COMPLETE AND WORKING HTML, CSS, JAVASCRIPT, AND .GS (GOOGLE APPS SCRIPT) CODE FOR THIS MODULE<br /> </p>
+<p>REMEMBER TO CONSULT GOOGLE SHEETS APPS SCRIPT DOCUMENTATION IF YOU ARE UNSURE ABOUT ANYTHING.<br /> <a href="https://developers.google.com/apps-script">https://developers.google.com/apps-script</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
